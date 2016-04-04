@@ -11,5 +11,6 @@ public class Blocks {
 
     public static void init() {
         mirror = new BlockMirror();
+        mirror.initModel();
     }
 }

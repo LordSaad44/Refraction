@@ -1,6 +1,9 @@
 package me.lordsaad.refraction.tileentities;
 
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.Packet;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 
 /**
@@ -8,29 +11,36 @@ import net.minecraft.tileentity.TileEntity;
  */
 public class TileEntityMirror extends TileEntity {
 
-    private int counter = 0;
+    private int angle = 0;
 
-    public int decrement() {
-        counter--;
+    public int getAngle() { return angle; }
+
+    public void setAngle(int newAngle) {
+        angle = newAngle;
         markDirty();
-        return counter;
     }
 
-    public int increment() {
-        counter++;
-        markDirty();
-        return counter;
+    @Override
+    public Packet getDescriptionPacket() {
+        NBTTagCompound nbtTag = new NBTTagCompound();
+        this.writeToNBT(nbtTag);
+        return new SPacketUpdateTileEntity(getPos(), 1, nbtTag);
+    }
+
+    @Override
+    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
+        this.readFromNBT(packet.getNbtCompound());
     }
 
     @Override
     public void readFromNBT(NBTTagCompound compound) {
         super.readFromNBT(compound);
-        counter = compound.getInteger("counter");
+        angle = compound.getInteger("angle");
     }
 
     @Override
     public void writeToNBT(NBTTagCompound compound) {
         super.writeToNBT(compound);
-        compound.setInteger("counter", counter);
+        compound.setInteger("angle", angle);
     }
 }

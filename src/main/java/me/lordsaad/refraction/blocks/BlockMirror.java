@@ -1,5 +1,6 @@
 package me.lordsaad.refraction.blocks;
 
+import me.lordsaad.refraction.tesrs.TESRMirror;
 import me.lordsaad.refraction.tileentities.TileEntityMirror;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
@@ -21,6 +22,7 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -43,6 +45,7 @@ public class BlockMirror extends Block implements ITileEntityProvider {
     @SideOnly(Side.CLIENT)
     public void initModel() {
         ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(this), 0, new ModelResourceLocation(getRegistryName(), "inventory"));
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityMirror.class, new TESRMirror());
     }
 
     @Override
@@ -59,13 +62,13 @@ public class BlockMirror extends Block implements ITileEntityProvider {
         if (!worldIn.isRemote) {
 
             if (side == state.getValue(FACING)) {
-                int counter;
+                TileEntityMirror mirror = getTE(worldIn, pos);
                 if (hitY < .5f) {
-                    counter = getTE(worldIn, pos).decrement();
+                    mirror.setAngle(mirror.getAngle() - 1);
                 } else {
-                    counter = getTE(worldIn, pos).increment();
+                    mirror.setAngle(mirror.getAngle() + 1);
                 }
-                playerIn.addChatMessage(new TextComponentString(TextFormatting.YELLOW + "counter:" + counter));
+                playerIn.addChatMessage(new TextComponentString(TextFormatting.YELLOW + "angle: " + mirror.getAngle()));
             }
         }
         return true;
