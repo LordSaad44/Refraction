@@ -1,0 +1,16 @@
+[
+{
+  "modid": "refraction",
+  "name": "Refraction",
+  "description": "A mod oriented around refracting light with mirrors and using it as a utility.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["LordSaad"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
