@@ -2,7 +2,6 @@ package me.lordsaad.refraction.tesrs;
 
 import me.lordsaad.refraction.Refraction;
 import me.lordsaad.refraction.tileentities.TileEntityMirror;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
@@ -52,7 +51,8 @@ public class TESRMirror extends TileEntitySpecialRenderer<TileEntityMirror> {
                 getBakedModel(),
                 getWorld().getBlockState(tileEntityMirror.getPos()),
                 tileEntityMirror.getPos(),
-                tessellator.getBuffer(), true);
+                tessellator.getBuffer(),
+                true);
         tessellator.draw();
 
         GlStateManager.popMatrix();
