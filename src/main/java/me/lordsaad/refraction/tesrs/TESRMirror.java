@@ -22,15 +22,15 @@ public class TESRMirror extends TileEntitySpecialRenderer<TileEntityMirror> {
     private IBakedModel bakedModel;
 
     public TESRMirror() {
-        try {
-            model = ModelLoaderRegistry.getModel(new ResourceLocation(Refraction.MODID, "block/mirror_pad.obj"));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     private IBakedModel getBakedModel() {
         if (bakedModel == null) {
+            try {
+                model = ModelLoaderRegistry.getModel(new ResourceLocation(Refraction.MODID, "block/mirror_pad.obj"));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             bakedModel = model.bake(model.getDefaultState(), DefaultVertexFormats.ITEM,
                     location -> Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(location.toString()));
         }
