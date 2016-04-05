@@ -11,7 +11,6 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
-import net.minecraftforge.client.model.TRSRTransformation;
 import org.lwjgl.opengl.GL11;
 
 /**
@@ -32,7 +31,7 @@ public class TESRMirror extends TileEntitySpecialRenderer<TileEntityMirror> {
 
     private IBakedModel getBakedModel() {
         if (bakedModel == null) {
-            bakedModel = model.bake(TRSRTransformation.identity(), DefaultVertexFormats.ITEM,
+            bakedModel = model.bake(model.getDefaultState(), DefaultVertexFormats.ITEM,
                     location -> Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(location.toString()));
         }
         return bakedModel;

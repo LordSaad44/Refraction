@@ -58,6 +58,7 @@ public class Refraction {
             super.preInit(e);
 
             OBJLoader.instance.addDomain(MODID);
+            Blocks.initModels();
         }
     }
 
