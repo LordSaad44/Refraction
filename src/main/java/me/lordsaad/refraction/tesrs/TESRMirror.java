@@ -6,6 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.block.model.IBakedModel;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
@@ -42,6 +43,8 @@ public class TESRMirror extends TileEntitySpecialRenderer<TileEntityMirror> {
         GlStateManager.pushMatrix();
 
         GlStateManager.rotate(tileEntityMirror.getAngle(), 0, 0, 1);
+
+        bindTexture(TextureMap.locationBlocksTexture);
 
         Tessellator tessellator = Tessellator.getInstance();
         tessellator.getBuffer().begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
