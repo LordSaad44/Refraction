@@ -1,12 +1,16 @@
 package me.lordsaad.refraction;
 
 import me.lordsaad.refraction.network.PacketHandler;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.model.obj.OBJLoader;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.PacketLoggingHandler;
 import org.apache.logging.log4j.Logger;
 
@@ -35,6 +39,7 @@ public class Refraction {
     @Mod.EventHandler
     public void init(FMLInitializationEvent e) {
         proxy.init(e);
+        CraftingRecipes.initCrafting();
     }
 
     @Mod.EventHandler
@@ -46,7 +51,7 @@ public class Refraction {
     public static class CommonProxy {
         public void preInit(FMLPreInitializationEvent e) {
             PacketHandler.registerMessages();
-            Blocks.init();
+            ModBlocks.init();
         }
 
         public void init(FMLInitializationEvent e) {
@@ -61,9 +66,15 @@ public class Refraction {
         @Override
         public void preInit(FMLPreInitializationEvent e) {
             super.preInit(e);
+            MinecraftForge.EVENT_BUS.register(this);
 
             OBJLoader.instance.addDomain(MODID);
-            Blocks.initModels();
+            ModBlocks.initModels();
+        }
+
+        @SubscribeEvent
+        public void onTextureStitchEvent(TextureStitchEvent.Pre event) {
+            event.map.registerSprite(new ResourceLocation(MODID + ":blocks/mirrorface"));
         }
     }
 

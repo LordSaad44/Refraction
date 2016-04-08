@@ -7,7 +7,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 /**
  * Created by Saad on 3/24/2016.
  */
-public class Blocks {
+public class ModBlocks {
 
     public static BlockMirror mirror;
 

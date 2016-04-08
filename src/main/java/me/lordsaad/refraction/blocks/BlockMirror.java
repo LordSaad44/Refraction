@@ -65,9 +65,11 @@ public class BlockMirror extends Block implements ITileEntityProvider {
             if (side.getOpposite() == state.getValue(FACING)) {
                 TileEntityMirror mirror = getTE(worldIn, pos);
                 if (hitY > .5f) {
-                    mirror.setAngle(mirror.getAngle() - 1);
+                    if (mirror.getAngle() > 30)
+                        mirror.setAngle(mirror.getAngle() - 1);
                 } else {
-                    mirror.setAngle(mirror.getAngle() + 1);
+                    if (mirror.getAngle() < 60)
+                        mirror.setAngle(mirror.getAngle() + 1);
                 }
                 PacketMirror packet = new PacketMirror(mirror.getAngle(), pos);
                 PacketHandler.INSTANCE.sendToAll(packet);
