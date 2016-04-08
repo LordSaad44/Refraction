@@ -11,7 +11,7 @@ import net.minecraft.tileentity.TileEntity;
  */
 public class TileEntityMirror extends TileEntity {
 
-    private int angle = 0;
+    private int angle = 90;
 
     public int getAngle() { return angle; }
 

@@ -4,12 +4,14 @@ import me.lordsaad.refraction.Refraction;
 import me.lordsaad.refraction.tileentities.TileEntityMirror;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
 import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import org.lwjgl.opengl.GL11;
@@ -42,21 +44,40 @@ public class TESRMirror extends TileEntitySpecialRenderer<TileEntityMirror> {
     public void renderTileEntityAt(TileEntityMirror tileEntityMirror, double x, double y, double z, float partialTicks, int destroyStage) {
         GlStateManager.pushMatrix();
 
-        GlStateManager.rotate(tileEntityMirror.getAngle(), 0, 0, 1);
+        GlStateManager.translate(x, y, z);
+        renderpad(tileEntityMirror);
 
+        GlStateManager.popMatrix();
+    }
+
+    private void renderpad(TileEntityMirror te) {
+        GlStateManager.pushMatrix();
+
+        /*GlStateManager.rotate(te.getAngle(), 0, 0, 1);
+        GlStateManager.translate(-0.5, -0.5, -0.5);
+        GlStateManager.scale(-0.5, -0.5, -0.5);
+*/
+        RenderHelper.disableStandardItemLighting();
         bindTexture(TextureMap.locationBlocksTexture);
+        if (Minecraft.isAmbientOcclusionEnabled())
+            GlStateManager.shadeModel(GL11.GL_SMOOTH);
+        else
+            GlStateManager.shadeModel(GL11.GL_FLAT);
+
+        World world = te.getWorld();
+        GlStateManager.translate(-te.getPos().getX(), -te.getPos().getY(), -te.getPos().getZ());
 
         Tessellator tessellator = Tessellator.getInstance();
         tessellator.getBuffer().begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
         Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelRenderer().renderModel(
-                getWorld(),
+                world,
                 getBakedModel(),
-                getWorld().getBlockState(tileEntityMirror.getPos()),
-                tileEntityMirror.getPos(),
-                tessellator.getBuffer(),
-                true);
+                world.getBlockState(te.getPos()),
+                te.getPos(),
+                Tessellator.getInstance().getBuffer(), true);
         tessellator.draw();
 
+        RenderHelper.enableStandardItemLighting();
         GlStateManager.popMatrix();
     }
 }

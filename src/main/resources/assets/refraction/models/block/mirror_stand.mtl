@@ -1,8 +1,7 @@
-# Blender MTL File: 'mirror_blender.blend'
+# Blender MTL File: 'None'
 # Material Count: 1
 
-newmtl None
-Ka 0.000000 0.000000 0.000000
-Kd 0.8 0.8 0.8
-d 1
-map_Kd refraction:blocks/mirrorback
+newmtl refraction:blocks/mirrorback.png
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.640000 0.640000
+d 1.000000
