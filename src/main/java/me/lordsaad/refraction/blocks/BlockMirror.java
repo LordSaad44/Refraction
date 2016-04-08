@@ -1,5 +1,7 @@
 package me.lordsaad.refraction.blocks;
 
+import me.lordsaad.refraction.network.PacketHandler;
+import me.lordsaad.refraction.network.PacketMirror;
 import me.lordsaad.refraction.tesrs.TESRMirror;
 import me.lordsaad.refraction.tileentities.TileEntityMirror;
 import net.minecraft.block.Block;
@@ -60,14 +62,15 @@ public class BlockMirror extends Block implements ITileEntityProvider {
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
         if (!worldIn.isRemote) {
-
-            if (side == state.getValue(FACING)) {
+            if (side.getOpposite() == state.getValue(FACING)) {
                 TileEntityMirror mirror = getTE(worldIn, pos);
-                if (hitY < .5f) {
+                if (hitY > .5f) {
                     mirror.setAngle(mirror.getAngle() - 1);
                 } else {
                     mirror.setAngle(mirror.getAngle() + 1);
                 }
+                PacketMirror packet = new PacketMirror(mirror.getAngle(), pos);
+                PacketHandler.INSTANCE.sendToAll(packet);
                 playerIn.addChatMessage(new TextComponentString(TextFormatting.YELLOW + "angle: " + mirror.getAngle()));
             }
         }

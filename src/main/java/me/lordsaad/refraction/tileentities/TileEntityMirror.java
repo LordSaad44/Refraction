@@ -23,13 +23,13 @@ public class TileEntityMirror extends TileEntity {
     @Override
     public Packet getDescriptionPacket() {
         NBTTagCompound nbtTag = new NBTTagCompound();
-        this.writeToNBT(nbtTag);
+        writeToNBT(nbtTag);
         return new SPacketUpdateTileEntity(getPos(), 1, nbtTag);
     }
 
     @Override
     public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
-        this.readFromNBT(packet.getNbtCompound());
+        readFromNBT(packet.getNbtCompound());
     }
 
     @Override
