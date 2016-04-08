@@ -28,12 +28,12 @@ public class TESRMirror extends TileEntitySpecialRenderer<TileEntityMirror> {
     }
 
     private IBakedModel getBakedModel() {
-        if (bakedModel == null) {
             try {
                 model = ModelLoaderRegistry.getModel(new ResourceLocation(Refraction.MODID, "block/mirror_pad.obj"));
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        if (bakedModel == null) {
             bakedModel = model.bake(model.getDefaultState(), DefaultVertexFormats.ITEM,
                     location -> Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(location.toString()));
         }
@@ -45,6 +45,7 @@ public class TESRMirror extends TileEntitySpecialRenderer<TileEntityMirror> {
         GlStateManager.pushMatrix();
 
         GlStateManager.translate(x, y, z);
+        GlStateManager.disableRescaleNormal();
         renderpad(tileEntityMirror);
 
         GlStateManager.popMatrix();
@@ -53,10 +54,10 @@ public class TESRMirror extends TileEntitySpecialRenderer<TileEntityMirror> {
     private void renderpad(TileEntityMirror te) {
         GlStateManager.pushMatrix();
 
-        /*GlStateManager.rotate(te.getAngle(), 0, 0, 1);
-        GlStateManager.translate(-0.5, -0.5, -0.5);
-        GlStateManager.scale(-0.5, -0.5, -0.5);
-*/
+        GlStateManager.translate(0.5, 0.7, 0.5);
+
+        GlStateManager.rotate(te.getAngle(), 0, 0, 1);
+
         RenderHelper.disableStandardItemLighting();
         bindTexture(TextureMap.locationBlocksTexture);
         if (Minecraft.isAmbientOcclusionEnabled())
