@@ -1,5 +1,8 @@
 package me.lordsaad.refraction.blocks;
 
+import me.lordsaad.refraction.ModBlocks;
+import me.lordsaad.refraction.ModItems;
+import me.lordsaad.refraction.Utils;
 import me.lordsaad.refraction.network.PacketHandler;
 import me.lordsaad.refraction.network.PacketMirror;
 import me.lordsaad.refraction.tesrs.TESRMirror;
@@ -19,6 +22,8 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.IBlockAccess;
@@ -38,6 +43,7 @@ public class BlockMirror extends Block implements ITileEntityProvider {
 
     public BlockMirror() {
         super(Material.glass);
+        setHardness(0.75F);
         setUnlocalizedName("Mirror");
         setRegistryName("mirror");
         GameRegistry.registerBlock(this);
@@ -62,19 +68,47 @@ public class BlockMirror extends Block implements ITileEntityProvider {
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
         if (!worldIn.isRemote) {
-            if (side.getOpposite() == state.getValue(FACING)) {
-                TileEntityMirror mirror = getTE(worldIn, pos);
-                if (hitY > .5f) {
-                    if (mirror.getAngle() > 30)
-                        mirror.setAngle(mirror.getAngle() - 1);
+            if (playerIn.inventory.getCurrentItem().getItem() == ModItems.screwdriver) {
+                if (!playerIn.isSneaking()) {
+                    if (side.getOpposite() == state.getValue(FACING)) {
+                        TileEntityMirror mirror = getTE(worldIn, pos);
+                        if (hitY > .5f) {
+                            if (mirror.getAngle() > 30)
+                                mirror.setAngle(mirror.getAngle() - 1);
+                        } else {
+                            if (mirror.getAngle() < 60)
+                                mirror.setAngle(mirror.getAngle() + 1);
+                        }
+
+                        // SEND PACKETS
+                        PacketMirror packet = new PacketMirror(mirror.getAngle(), pos);
+                        PacketHandler.INSTANCE.sendToAll(packet);
+                        playerIn.addChatMessage(new TextComponentString(TextFormatting.YELLOW + "angle: " + mirror.getAngle()));
+
+                        // RAYTRACE
+                        Vec3d start = new Vec3d(pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5);
+                        Vec3d end = start.add(Utils.getVectorForRotation3d(side.getHorizontalAngle(), mirror.getAngle()));
+                        RayTraceResult raytrace = worldIn.rayTraceBlocks(start, end, false, false, false);
+                        BlockPos targetPos = raytrace.getBlockPos();
+                        IBlockState targetBlock = worldIn.getBlockState(targetPos);
+
+                        if (targetBlock.getBlock() == ModBlocks.mirror) {
+                            if (targetBlock.getValue(FACING) == raytrace.sideHit.getOpposite()) {
+                                playerIn.addChatMessage(new TextComponentString(TextFormatting.YELLOW + "SUCCESS"));
+                                playerIn.addChatMessage(new TextComponentString(TextFormatting.YELLOW + targetBlock.getBlock().getLocalizedName()));
+                            } else {
+                                playerIn.addChatMessage(new TextComponentString(TextFormatting.YELLOW + "FAIL"));
+                                playerIn.addChatMessage(new TextComponentString(TextFormatting.YELLOW + targetBlock.getBlock().getLocalizedName()));
+                            }
+                        } else {
+                            playerIn.addChatMessage(new TextComponentString(TextFormatting.YELLOW + targetBlock.getBlock().getLocalizedName()));
+                        }
+                    }
                 } else {
-                    if (mirror.getAngle() < 60)
-                        mirror.setAngle(mirror.getAngle() + 1);
+                    blockState.getBlock().dropBlockAsItem(worldIn, pos, state, 1);
+                    worldIn.setBlockToAir(pos);
                 }
-                PacketMirror packet = new PacketMirror(mirror.getAngle(), pos);
-                PacketHandler.INSTANCE.sendToAll(packet);
-                playerIn.addChatMessage(new TextComponentString(TextFormatting.YELLOW + "angle: " + mirror.getAngle()));
-            }
+            } else return false;
         }
         return true;
     }

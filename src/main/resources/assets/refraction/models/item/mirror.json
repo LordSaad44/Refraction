@@ -1,5 +1,5 @@
 {
-  "parent": "builtin/generated",
+  "parent": "item/handheld",
   "textures": {
     "layer0": "refraction:items/mirroricon"
   },
@@ -25,7 +25,7 @@
       "rotation": [
         0,
         -135,
-        90
+        25
       ],
       "translation": [
         0,

@@ -51,6 +51,7 @@ public class Refraction {
     public static class CommonProxy {
         public void preInit(FMLPreInitializationEvent e) {
             PacketHandler.registerMessages();
+            ModItems.init();
             ModBlocks.init();
         }
 
@@ -69,6 +70,7 @@ public class Refraction {
             MinecraftForge.EVENT_BUS.register(this);
 
             OBJLoader.instance.addDomain(MODID);
+            ModItems.initModels();
             ModBlocks.initModels();
         }
 
