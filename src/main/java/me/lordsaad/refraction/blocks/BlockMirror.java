@@ -1,6 +1,7 @@
 package me.lordsaad.refraction.blocks;
 
 import me.lordsaad.refraction.ModItems;
+import me.lordsaad.refraction.Utils;
 import me.lordsaad.refraction.network.PacketHandler;
 import me.lordsaad.refraction.network.PacketMirror;
 import me.lordsaad.refraction.tesrs.TESRMirror;
@@ -18,6 +19,10 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
@@ -70,35 +75,44 @@ public class BlockMirror extends Block implements ITileEntityProvider {
                         if (side == EnumFacing.NORTH || side == EnumFacing.SOUTH) {
 
                             if (side == EnumFacing.SOUTH) {
-                                if (top) mirror.setPitch(mirror.getPitch() - 1);
-                                else if (bottom) mirror.setPitch(mirror.getPitch() + 1);
+                                if (top) mirror.subtractPitch(1);
+                                else if (bottom) mirror.addPitch(1);
                             } else {
-                                if (top) mirror.setPitch(mirror.getPitch() + 1);
-                                else if (bottom) mirror.setPitch(mirror.getPitch() - 1);
+                                if (top) mirror.addPitch(1);
+                                else if (bottom) mirror.subtractPitch(1);
                             }
 
-                            if (left) mirror.setYaw(mirror.getYaw() - 1);
-                            else if (right) mirror.setYaw(mirror.getYaw() + 1);
+                            if (left) mirror.subtractYaw(1);
+                            else if (right) mirror.addYaw(1);
 
                         } else {
 
                             if (side == EnumFacing.EAST) {
-                                if (top) mirror.setYaw(mirror.getYaw() + 1);
-                                else if (bottom) mirror.setYaw(mirror.getYaw() - 1);
+                                if (top) mirror.addYaw(1);
+                                else if (bottom) mirror.subtractYaw(1);
                             } else {
-                                if (top) mirror.setYaw(mirror.getYaw() - 1);
-                                else if (bottom) mirror.setYaw(mirror.getYaw() + 1);
+                                if (top) mirror.subtractYaw(1);
+                                else if (bottom) mirror.addYaw(1);
                             }
 
-                            if (left) mirror.setPitch(mirror.getPitch() + 1);
-                            else if (right) mirror.setPitch(mirror.getPitch() - 1);
+                            if (left) mirror.addPitch(1);
+                            else if (right) mirror.subtractPitch(1);
                         }
 
                         // SEND PACKETS
                         PacketMirror packet = new PacketMirror(mirror.getYaw(), mirror.getPitch(), pos);
                         PacketHandler.INSTANCE.sendToAll(packet);
 
-                        // RAYTRACE HERE //
+                        // RAYTRACE //
+                        Vec3d centervec = new Vec3d(pos.getX() + 0.5, pos.getY() + 0.8, pos.getZ() + 0.5);
+
+                        Vec3d lookvec = Utils.getVectorForRotation3d(mirror.getPitch(), mirror.getYaw()).normalize();
+                        Vec3d startvec = centervec.add(lookvec);
+
+                        Vec3d end = startvec.add(new Vec3d(lookvec.xCoord * 100, lookvec.yCoord * 100, lookvec.zCoord * 100));
+                        RayTraceResult result = worldIn.rayTraceBlocks(startvec, end, false, false, true);
+                        playerIn.addChatComponentMessage(new TextComponentString(TextFormatting.YELLOW + "pitch: " + mirror.getPitch() + " -- yaw:" + mirror.getYaw()));
+                        playerIn.addChatComponentMessage(new TextComponentString(TextFormatting.YELLOW + worldIn.getBlockState(result.getBlockPos()).getBlock().getLocalizedName()));
                     }
                 } else {
                     blockState.getBlock().dropBlockAsItem(worldIn, pos, state, 1);

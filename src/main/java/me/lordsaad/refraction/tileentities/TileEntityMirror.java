@@ -19,6 +19,18 @@ public class TileEntityMirror extends TileEntity {
         markDirty();
     }
 
+    public void addPitch(int amount) {
+        if (pitch == 90) pitch = -89;
+        if (pitch == -90) pitch = 89;
+        if (pitch < 90 && pitch > -90) pitch += amount;
+    }
+
+    public void subtractPitch(int amount) {
+        if (pitch == 90) pitch = -89;
+        if (pitch == -90) pitch = 89;
+        if (pitch < 90 && pitch > -90) pitch -= amount;
+    }
+
     public int getYaw() {
         return yaw;
     }
@@ -26,6 +38,18 @@ public class TileEntityMirror extends TileEntity {
     public void setYaw(int yaw) {
         this.yaw = yaw;
         markDirty();
+    }
+
+    public void addYaw(int amount) {
+        if (yaw == 180) yaw = -179;
+        if (yaw == -180) yaw = 179;
+        if (yaw < 180 && yaw > -180) yaw += amount;
+    }
+
+    public void subtractYaw(int amount) {
+        if (yaw == 180) yaw = -179;
+        if (yaw == -180) yaw = 179;
+        if (yaw < 180 && yaw > -180) yaw -= amount;
     }
 
     @Override
