@@ -99,7 +99,7 @@ public class BlockMirror extends Block implements ITileEntityProvider {
                             else if (right) mirror.subtractPitch(1);
                         }
 
-                        // SEND PACKETS
+                        // SEND PACKETS //
                         PacketMirror packet = new PacketMirror(mirror.getYaw(), mirror.getPitch(), pos);
                         PacketHandler.INSTANCE.sendToAll(packet);
 

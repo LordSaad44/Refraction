@@ -1,0 +1,36 @@
+{
+  "variants": {
+    "facing=up": {
+      "model": "prism",
+      "uvlock": true
+    },
+    "facing=down": {
+      "model": "prism",
+      "uvlock": true,
+      "x": 180
+    },
+    "facing=east": {
+      "model": "prism",
+      "uvlock": true,
+      "x": 90,
+      "y": 90
+    },
+    "facing=west": {
+      "model": "prism",
+      "uvlock": true,
+      "x": 90,
+      "y": 270
+    },
+    "facing=south": {
+      "model": "prism",
+      "uvlock": true,
+      "x": 90,
+      "y": 180
+    },
+    "facing=north": {
+      "model": "prism",
+      "uvlock": true,
+      "x": 90
+    }
+  }
+}

@@ -1,6 +1,7 @@
 package me.lordsaad.refraction;
 
 import me.lordsaad.refraction.blocks.BlockMirror;
+import me.lordsaad.refraction.blocks.BlockPrism;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -10,14 +11,16 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class ModBlocks {
 
     public static BlockMirror mirror;
+    public static BlockPrism prism;
 
     public static void init() {
         mirror = new BlockMirror();
+        prism = new BlockPrism();
     }
 
     @SideOnly(Side.CLIENT)
     public static void initModels() {
         mirror.initModel();
+        prism.initModel();
     }
-
 }
