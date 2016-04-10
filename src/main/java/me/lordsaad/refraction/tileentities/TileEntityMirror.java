@@ -1,9 +1,6 @@
 package me.lordsaad.refraction.tileentities;
 
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.Packet;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 
 /**
@@ -11,36 +8,37 @@ import net.minecraft.tileentity.TileEntity;
  */
 public class TileEntityMirror extends TileEntity {
 
-    private int angle = 45;
+    private int yaw = 0, pitch = 0;
 
-    public int getAngle() { return angle; }
+    public int getPitch() {
+        return pitch;
+    }
 
-    public void setAngle(int newAngle) {
-        angle = newAngle;
+    public void setPitch(int pitch) {
+        this.pitch = pitch;
         markDirty();
     }
 
-    @Override
-    public Packet getDescriptionPacket() {
-        NBTTagCompound nbtTag = new NBTTagCompound();
-        writeToNBT(nbtTag);
-        return new SPacketUpdateTileEntity(getPos(), 1, nbtTag);
+    public int getYaw() {
+        return yaw;
     }
 
-    @Override
-    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
-        readFromNBT(packet.getNbtCompound());
+    public void setYaw(int yaw) {
+        this.yaw = yaw;
+        markDirty();
     }
 
     @Override
     public void readFromNBT(NBTTagCompound compound) {
         super.readFromNBT(compound);
-        angle = compound.getInteger("angle");
+        yaw = compound.getInteger("yaw");
+        pitch = compound.getInteger("pitch");
     }
 
     @Override
     public void writeToNBT(NBTTagCompound compound) {
         super.writeToNBT(compound);
-        compound.setInteger("angle", angle);
+        compound.setInteger("yaw", yaw);
+        compound.setInteger("pitch", pitch);
     }
 }

@@ -1,7 +1,6 @@
 package me.lordsaad.refraction.tesrs;
 
 import me.lordsaad.refraction.Refraction;
-import me.lordsaad.refraction.blocks.BlockMirror;
 import me.lordsaad.refraction.tileentities.TileEntityMirror;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -11,7 +10,6 @@ import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.IModel;
@@ -56,27 +54,9 @@ public class TESRMirror extends TileEntitySpecialRenderer<TileEntityMirror> {
     private void renderpad(TileEntityMirror te) {
         GlStateManager.pushMatrix();
 
-        EnumFacing facing = getWorld().getBlockState(te.getPos()).getValue(BlockMirror.FACING);
-
-        switch (facing) {
-            case EAST:
-                GlStateManager.translate(0, 0, 0);
-                break;
-            case WEST:
-                GlStateManager.rotate(180, 0, 1, 0);
-                GlStateManager.translate(-1, 0, -1);
-                break;
-            case NORTH:
-                GlStateManager.rotate(90, 0, 1, 0);
-                GlStateManager.translate(-1, 0, 0);
-                break;
-            case SOUTH:
-                GlStateManager.rotate(-90, 0, 1, 0);
-                GlStateManager.translate(0, 0, -1);
-        }
-
         GlStateManager.translate(0.5, 0.7, 0.5);
-        GlStateManager.rotate(te.getAngle(), 0, 0, 1);
+        GlStateManager.rotate(te.getYaw(), 0, 0, 1);
+        GlStateManager.rotate(te.getPitch(), 1, 0, 0);
 
         RenderHelper.disableStandardItemLighting();
         bindTexture(TextureMap.locationBlocksTexture);

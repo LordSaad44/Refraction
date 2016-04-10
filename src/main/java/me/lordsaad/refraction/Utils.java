@@ -3,6 +3,7 @@ package me.lordsaad.refraction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
+
 /**
  * Created by Saad on 4/9/2016.
  */

@@ -1,8 +1,6 @@
 package me.lordsaad.refraction.blocks;
 
-import me.lordsaad.refraction.ModBlocks;
 import me.lordsaad.refraction.ModItems;
-import me.lordsaad.refraction.Utils;
 import me.lordsaad.refraction.network.PacketHandler;
 import me.lordsaad.refraction.network.PacketMirror;
 import me.lordsaad.refraction.tesrs.TESRMirror;
@@ -10,11 +8,9 @@ import me.lordsaad.refraction.tileentities.TileEntityMirror;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -22,10 +18,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
@@ -38,8 +30,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  * Created by Saad on 3/24/2016.
  */
 public class BlockMirror extends Block implements ITileEntityProvider {
-
-    public static final PropertyDirection FACING = PropertyDirection.create("facing", EnumFacing.Plane.HORIZONTAL);
 
     public BlockMirror() {
         super(Material.glass);
@@ -70,39 +60,45 @@ public class BlockMirror extends Block implements ITileEntityProvider {
         if (!worldIn.isRemote) {
             if (playerIn.inventory.getCurrentItem().getItem() == ModItems.screwdriver) {
                 if (!playerIn.isSneaking()) {
-                    if (side.getOpposite() == state.getValue(FACING)) {
-                        TileEntityMirror mirror = getTE(worldIn, pos);
-                        if (hitY > .5f) {
-                            if (mirror.getAngle() > 30)
-                                mirror.setAngle(mirror.getAngle() - 1);
+                    TileEntityMirror mirror = getTE(worldIn, pos);
+
+                    if (side != EnumFacing.UP && side != EnumFacing.DOWN) {
+                        boolean top = hitY >= 0.7f, bottom = hitY <= 0.3;
+                        boolean left = (side.getAxis() == EnumFacing.Axis.Z ? hitX : hitZ) >= 0.7f;
+                        boolean right = (side.getAxis() == EnumFacing.Axis.Z ? hitX : hitZ) <= 0.3f;
+
+                        if (side == EnumFacing.NORTH || side == EnumFacing.SOUTH) {
+
+                            if (side == EnumFacing.SOUTH) {
+                                if (top) mirror.setPitch(mirror.getPitch() - 1);
+                                else if (bottom) mirror.setPitch(mirror.getPitch() + 1);
+                            } else {
+                                if (top) mirror.setPitch(mirror.getPitch() + 1);
+                                else if (bottom) mirror.setPitch(mirror.getPitch() - 1);
+                            }
+
+                            if (left) mirror.setYaw(mirror.getYaw() - 1);
+                            else if (right) mirror.setYaw(mirror.getYaw() + 1);
+
                         } else {
-                            if (mirror.getAngle() < 60)
-                                mirror.setAngle(mirror.getAngle() + 1);
+
+                            if (side == EnumFacing.EAST) {
+                                if (top) mirror.setYaw(mirror.getYaw() + 1);
+                                else if (bottom) mirror.setYaw(mirror.getYaw() - 1);
+                            } else {
+                                if (top) mirror.setYaw(mirror.getYaw() - 1);
+                                else if (bottom) mirror.setYaw(mirror.getYaw() + 1);
+                            }
+
+                            if (left) mirror.setPitch(mirror.getPitch() + 1);
+                            else if (right) mirror.setPitch(mirror.getPitch() - 1);
                         }
 
                         // SEND PACKETS
-                        PacketMirror packet = new PacketMirror(mirror.getAngle(), pos);
+                        PacketMirror packet = new PacketMirror(mirror.getYaw(), mirror.getPitch(), pos);
                         PacketHandler.INSTANCE.sendToAll(packet);
-                        playerIn.addChatMessage(new TextComponentString(TextFormatting.YELLOW + "angle: " + mirror.getAngle()));
 
-                        // RAYTRACE
-                        Vec3d start = new Vec3d(pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5);
-                        Vec3d end = start.add(Utils.getVectorForRotation3d(side.getHorizontalAngle(), mirror.getAngle()));
-                        RayTraceResult raytrace = worldIn.rayTraceBlocks(start, end, false, false, false);
-                        BlockPos targetPos = raytrace.getBlockPos();
-                        IBlockState targetBlock = worldIn.getBlockState(targetPos);
-
-                        if (targetBlock.getBlock() == ModBlocks.mirror) {
-                            if (targetBlock.getValue(FACING) == raytrace.sideHit.getOpposite()) {
-                                playerIn.addChatMessage(new TextComponentString(TextFormatting.YELLOW + "SUCCESS"));
-                                playerIn.addChatMessage(new TextComponentString(TextFormatting.YELLOW + targetBlock.getBlock().getLocalizedName()));
-                            } else {
-                                playerIn.addChatMessage(new TextComponentString(TextFormatting.YELLOW + "FAIL"));
-                                playerIn.addChatMessage(new TextComponentString(TextFormatting.YELLOW + targetBlock.getBlock().getLocalizedName()));
-                            }
-                        } else {
-                            playerIn.addChatMessage(new TextComponentString(TextFormatting.YELLOW + targetBlock.getBlock().getLocalizedName()));
-                        }
+                        // RAYTRACE HERE //
                     }
                 } else {
                     blockState.getBlock().dropBlockAsItem(worldIn, pos, state, 1);
@@ -110,6 +106,7 @@ public class BlockMirror extends Block implements ITileEntityProvider {
                 }
             } else return false;
         }
+
         return true;
     }
 
@@ -130,23 +127,8 @@ public class BlockMirror extends Block implements ITileEntityProvider {
     }
 
     @Override
-    public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
-        world.setBlockState(pos, state.withProperty(FACING, placer.getHorizontalFacing().getOpposite()), 2);
-    }
-
-    @Override
-    public IBlockState getStateFromMeta(int meta) {
-        return getDefaultState().withProperty(FACING, EnumFacing.getFront((meta & 3) + 2));
-    }
-
-    @Override
-    public int getMetaFromState(IBlockState state) {
-        return state.getValue(FACING).getIndex() - 2;
-    }
-
-    @Override
     protected BlockStateContainer createBlockState() {
-        return new BlockStateContainer(this, FACING);
+        return new BlockStateContainer(this);
     }
 
 }

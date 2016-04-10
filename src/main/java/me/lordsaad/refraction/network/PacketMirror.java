@@ -17,23 +17,26 @@ public class PacketMirror implements IMessage {
     public PacketMirror() {
     }
 
-    private int angle;
+    private int yaw, pitch;
     private BlockPos pos;
 
-    public PacketMirror(int angle, BlockPos pos) {
-        this.angle = angle;
+    public PacketMirror(int yaw, int pitch, BlockPos pos) {
+        this.yaw = yaw;
+        this.pitch = pitch;
         this.pos = pos;
     }
 
     @Override
     public void fromBytes(ByteBuf byteBuf) {
-        angle = byteBuf.readInt();
+        yaw = byteBuf.readInt();
+        pitch = byteBuf.readInt();
         pos = new BlockPos(byteBuf.readInt(), byteBuf.readInt(), byteBuf.readInt());
     }
 
     @Override
     public void toBytes(ByteBuf byteBuf) {
-        byteBuf.writeInt(angle);
+        byteBuf.writeInt(yaw);
+        byteBuf.writeInt(pitch);
         byteBuf.writeInt(pos.getX());
         byteBuf.writeInt(pos.getY());
         byteBuf.writeInt(pos.getZ());
@@ -44,12 +47,14 @@ public class PacketMirror implements IMessage {
 
         @Override
         public IMessage onMessage(PacketMirror mirror, MessageContext messageContext) {
-            int angle = mirror.angle;
+            int yaw = mirror.yaw;
+            int pitch = mirror.pitch;
             BlockPos pos = mirror.pos;
             TileEntity tileEntity = Minecraft.getMinecraft().theWorld.getTileEntity(pos);
             if (tileEntity instanceof TileEntityMirror) {
                 TileEntityMirror tileEntityMirror = (TileEntityMirror) tileEntity;
-                tileEntityMirror.setAngle(angle);
+                tileEntityMirror.setYaw(yaw);
+                tileEntityMirror.setPitch(pitch);
             }
             return null;
         }
