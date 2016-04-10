@@ -9,8 +9,8 @@ import net.minecraftforge.fml.relauncher.Side;
  * Created by Saad on 4/8/2016.
  */
 public class PacketHandler {
-    private static int packetID = 0;
     public static final SimpleNetworkWrapper INSTANCE = NetworkRegistry.INSTANCE.newSimpleChannel(Refraction.MODID);
+    private static int packetID = 0;
 
     public PacketHandler() {
     }

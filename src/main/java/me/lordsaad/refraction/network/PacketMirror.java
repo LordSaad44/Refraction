@@ -14,11 +14,11 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
  */
 public class PacketMirror implements IMessage {
 
-    public PacketMirror() {
-    }
-
     private int yaw, pitch;
     private BlockPos pos;
+
+    public PacketMirror() {
+    }
 
     public PacketMirror(int yaw, int pitch, BlockPos pos) {
         this.yaw = yaw;
