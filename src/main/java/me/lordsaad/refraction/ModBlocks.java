@@ -1,5 +1,6 @@
 package me.lordsaad.refraction;
 
+import me.lordsaad.refraction.blocks.BlockMagnifier;
 import me.lordsaad.refraction.blocks.BlockMirror;
 import me.lordsaad.refraction.blocks.BlockPrism;
 import net.minecraftforge.fml.relauncher.Side;
@@ -12,15 +13,18 @@ public class ModBlocks {
 
     public static BlockMirror mirror;
     public static BlockPrism prism;
+    public static BlockMagnifier magnifier;
 
     public static void init() {
         mirror = new BlockMirror();
         prism = new BlockPrism();
+        magnifier = new BlockMagnifier();
     }
 
     @SideOnly(Side.CLIENT)
     public static void initModels() {
         mirror.initModel();
         prism.initModel();
+        magnifier.initModel();
     }
 }

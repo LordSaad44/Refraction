@@ -1,0 +1,26 @@
+# Blender MTL File: 'magnifier.blend'
+# Material Count: 4
+
+newmtl Material.001
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.640000 0.640000
+d 1.000000
+map_Kd refraction:blocks/mirrorback
+
+newmtl Material.002
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.640000 0.640000
+d 1.000000
+map_Kd refraction:blocks/mirrorback
+
+newmtl Material.003
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.640000 0.640000
+d 1.000000
+map_Kd refraction:blocks/mirrorback
+
+newmtl Material.004
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.640000 0.640000
+d 1.000000
+map_Kd refraction:blocks/glass

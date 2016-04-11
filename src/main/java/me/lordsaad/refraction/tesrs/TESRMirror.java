@@ -1,6 +1,7 @@
 package me.lordsaad.refraction.tesrs;
 
 import me.lordsaad.refraction.Refraction;
+import me.lordsaad.refraction.blocks.BlockMirror;
 import me.lordsaad.refraction.tileentities.TileEntityMirror;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -10,6 +11,7 @@ import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.IModel;
@@ -54,7 +56,21 @@ public class TESRMirror extends TileEntitySpecialRenderer<TileEntityMirror> {
     private void renderpad(TileEntityMirror te) {
         GlStateManager.pushMatrix();
 
-        GlStateManager.translate(0.5, 0.7, 0.5);
+        EnumFacing facing = te.getWorld().getBlockState(te.getPos()).getValue(BlockMirror.FACING);
+        if (facing == EnumFacing.NORTH) {
+            GlStateManager.translate(0.5, 0.5, 0.4);
+        } else if (facing == EnumFacing.SOUTH) {
+            GlStateManager.translate(0.5, 0.5, 0.6);
+        } else if (facing == EnumFacing.EAST) {
+            GlStateManager.translate(0.6, 0.5, 0.5);
+        } else if (facing == EnumFacing.WEST) {
+            GlStateManager.translate(0.4, 0.5, 0.5);
+        } else if (facing == EnumFacing.DOWN) {
+            GlStateManager.translate(0.5, 0.4, 0.5);
+        } else if (facing == EnumFacing.UP) {
+            GlStateManager.translate(0.5, 0.6, 0.5);
+        }
+
         GlStateManager.rotate(te.getYaw(), 0, 0, 1);
         GlStateManager.rotate(te.getPitch(), 1, 0, 0);
 

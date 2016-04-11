@@ -4,7 +4,7 @@
     "custom": {
       "flip-v": true
     },
-    "model": "refraction:prism.obj",
+    "model": "refraction:magnifier.obj",
     "uvlock": true
   },
   "inventory": [
