@@ -45,7 +45,7 @@ public class BlockMirror extends BlockDirectional implements ITileEntityProvider
         setUnlocalizedName("Mirror");
         setRegistryName("mirror");
         GameRegistry.registerBlock(this);
-        GameRegistry.registerTileEntity(TileEntityMirror.class, "Mirror");
+        GameRegistry.registerTileEntity(TileEntityMirror.class, "mirror");
     }
 
     @SideOnly(Side.CLIENT)
@@ -135,7 +135,7 @@ public class BlockMirror extends BlockDirectional implements ITileEntityProvider
             mirror.setPitch(-89);
         } else if (facing == EnumFacing.SOUTH) {
             mirror.setYaw(0);
-            mirror.setPitch(90);
+            mirror.setPitch(89);
         } else if (facing == EnumFacing.EAST) {
             mirror.setYaw(-89);
             mirror.setPitch(0);

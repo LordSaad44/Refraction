@@ -89,6 +89,7 @@ public class BlockMagnifier extends BlockDirectional implements ITileEntityProvi
             case 5:
             default:
                 enumfacing = EnumFacing.UP;
+                break;
         }
 
         return this.getDefaultState().withProperty(FACING, enumfacing);
@@ -116,6 +117,7 @@ public class BlockMagnifier extends BlockDirectional implements ITileEntityProvi
                 break;
             case 6:
                 i = 0;
+                break;
         }
         return i;
     }

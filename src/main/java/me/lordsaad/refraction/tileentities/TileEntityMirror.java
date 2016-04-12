@@ -1,6 +1,9 @@
 package me.lordsaad.refraction.tileentities;
 
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.Packet;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 
 /**
@@ -23,12 +26,14 @@ public class TileEntityMirror extends TileEntity {
         if (pitch == 90) pitch = -89;
         if (pitch == -90) pitch = 89;
         if (pitch < 90 && pitch > -90) pitch += amount;
+        markDirty();
     }
 
     public void subtractPitch(int amount) {
         if (pitch == 90) pitch = -89;
         if (pitch == -90) pitch = 89;
         if (pitch < 90 && pitch > -90) pitch -= amount;
+        markDirty();
     }
 
     public int getYaw() {
@@ -44,12 +49,26 @@ public class TileEntityMirror extends TileEntity {
         if (yaw == 180) yaw = -179;
         if (yaw == -180) yaw = 179;
         if (yaw < 180 && yaw > -180) yaw += amount;
+        markDirty();
     }
 
     public void subtractYaw(int amount) {
         if (yaw == 180) yaw = -179;
         if (yaw == -180) yaw = 179;
         if (yaw < 180 && yaw > -180) yaw -= amount;
+        markDirty();
+    }
+
+    @Override
+    public Packet getDescriptionPacket() {
+        NBTTagCompound nbtTag = new NBTTagCompound();
+        this.writeToNBT(nbtTag);
+        return new SPacketUpdateTileEntity(getPos(), 1, nbtTag);
+    }
+
+    @Override
+    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
+        this.readFromNBT(packet.getNbtCompound());
     }
 
     @Override
