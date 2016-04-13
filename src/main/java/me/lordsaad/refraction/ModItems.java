@@ -1,5 +1,6 @@
 package me.lordsaad.refraction;
 
+import me.lordsaad.refraction.items.ItemPhysicsBook;
 import me.lordsaad.refraction.items.ItemScrewDriver;
 
 /**
@@ -8,12 +9,15 @@ import me.lordsaad.refraction.items.ItemScrewDriver;
 public class ModItems {
 
     public static ItemScrewDriver screwdriver;
+    public static ItemPhysicsBook physicsBook;
 
     public static void init() {
         screwdriver = new ItemScrewDriver();
+        physicsBook = new ItemPhysicsBook();
     }
 
     public static void initModels() {
         screwdriver.initModel();
+        physicsBook.initModel();
     }
 }

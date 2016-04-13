@@ -1,5 +1,6 @@
 package me.lordsaad.refraction;
 
+import me.lordsaad.refraction.documentation.Book;
 import me.lordsaad.refraction.network.PacketHandler;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.TextureStitchEvent;
@@ -11,6 +12,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.PacketLoggingHandler;
 import org.apache.logging.log4j.Logger;
 
@@ -56,6 +58,7 @@ public class Refraction {
         }
 
         public void init(FMLInitializationEvent e) {
+            NetworkRegistry.INSTANCE.registerGuiHandler(instance, new Book());
         }
 
         public void postInit(FMLPostInitializationEvent e) {
