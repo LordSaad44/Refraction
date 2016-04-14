@@ -15,11 +15,16 @@ public class BookBase extends GuiScreen {
 
     public static final ResourceLocation BACKGROUND_TEXTURE = new ResourceLocation(Refraction.MODID, "textures/gui/book.png");
 
-    int guiWidth = 146, guiHeight = 180, left = width / 2 - guiWidth / 2, top = height / 2 - guiHeight / 2;
+    int guiWidth = 146;
+    int guiHeight = 180;
+    int left, top;
 
     @Override
     public void initGui() {
         super.initGui();
+        left = width / 2 - guiWidth / 2;
+        top = height / 2 - guiHeight / 2;
+
     }
 
     @Override
