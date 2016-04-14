@@ -11,32 +11,27 @@ import java.io.IOException;
 /**
  * Created by Saad on 4/13/2016.
  */
-public class Index extends GuiScreen {
+public class BookBase extends GuiScreen {
 
-    private GuiButton section1;
-    int guiWidth = 146;
-    int guiHeight = 180;
+    public static final ResourceLocation BACKGROUND_TEXTURE = new ResourceLocation(Refraction.MODID, "textures/gui/book.png");
+
+    int guiWidth = 146, guiHeight = 180, left = width / 2 - guiWidth / 2, top = height / 2 - guiHeight / 2;
 
     @Override
     public void initGui() {
         super.initGui();
-        buttonList.add(section1 = new GuiButton(0, this.width / 2 - 100, this.height / 2 - 24, "section 1"));
     }
 
     @Override
     protected void actionPerformed(GuiButton button) throws IOException {
-        if (button == section1) {
-            this.mc.displayGuiScreen(null);
-            if (this.mc.currentScreen == null)
-                this.mc.setIngameFocus();
-        }
+
     }
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        drawDefaultBackground();
         GlStateManager.color(1F, 1F, 1F, 1F);
-        mc.renderEngine.bindTexture(new ResourceLocation(Refraction.MODID, "gui/physicsbook/book_main_template.png"));
+        mc.renderEngine.bindTexture(BACKGROUND_TEXTURE);
+        drawTexturedModalRect(left, top, 0, 0, guiWidth, guiHeight);
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 

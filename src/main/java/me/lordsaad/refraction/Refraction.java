@@ -1,6 +1,6 @@
 package me.lordsaad.refraction;
 
-import me.lordsaad.refraction.documentation.Book;
+import me.lordsaad.refraction.documentation.GuiHandler;
 import me.lordsaad.refraction.network.PacketHandler;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.TextureStitchEvent;
@@ -58,7 +58,7 @@ public class Refraction {
         }
 
         public void init(FMLInitializationEvent e) {
-            NetworkRegistry.INSTANCE.registerGuiHandler(instance, new Book());
+            NetworkRegistry.INSTANCE.registerGuiHandler(instance, new GuiHandler());
         }
 
         public void postInit(FMLPostInitializationEvent e) {
