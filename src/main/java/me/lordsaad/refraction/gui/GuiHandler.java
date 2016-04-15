@@ -1,4 +1,4 @@
-package me.lordsaad.refraction.documentation;
+package me.lordsaad.refraction.gui;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;

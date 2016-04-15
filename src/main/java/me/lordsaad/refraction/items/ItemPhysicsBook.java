@@ -1,7 +1,7 @@
 package me.lordsaad.refraction.items;
 
 import me.lordsaad.refraction.Refraction;
-import me.lordsaad.refraction.documentation.GuiHandler;
+import me.lordsaad.refraction.gui.GuiHandler;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
