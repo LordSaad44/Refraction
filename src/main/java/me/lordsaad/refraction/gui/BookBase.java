@@ -1,17 +1,15 @@
 package me.lordsaad.refraction.gui;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
 import me.lordsaad.refraction.Refraction;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.TextComponentString;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by Saad on 4/13/2016.
@@ -25,7 +23,7 @@ public class BookBase extends GuiScreen {
     int left, top;
     boolean isIndex = true;
 
-    BiMap<String, Integer> tips = HashBiMap.create();
+    HashMap<String, Integer> tips = new HashMap<>();
     ArrayList<String> remove = new ArrayList<>();
     GuiButton BASICS, ITEMS, BEAM_MANIPULATION, ENERGY;
 
@@ -61,23 +59,16 @@ public class BookBase extends GuiScreen {
         }
     }
 
-    public void createTip(BiMap<String, Integer> tips) {
-        this.tips = tips;
-    }
-
     @Override
     public void updateScreen() {
         if (!tips.isEmpty()) {
             for (String tip : tips.keySet()) {
-                double tipLoc = tips.get(tip);
-                if (tipLoc != tip.length() * 10) {
-                    tipLoc /= tipLoc - 1.5 * -1;
-                    mc.thePlayer.addChatComponentMessage(new TextComponentString(tipLoc + ""));
-
-                    GlStateManager.pushMatrix();
+                int tipLoc = tips.get(tip);
+                if (tipLoc > tip.length() * -10) {
+                    tipLoc--;
+                    tips.put(tip, tipLoc);
                     mc.renderEngine.bindTexture(BACKGROUND_TEXTURE);
-                    drawTexturedModalRect((float) tipLoc, 70, 20, 182, 133, 14);
-                    GlStateManager.popMatrix();
+                    drawTexturedModalRect(left + tipLoc, top + 70, 20, 182, 133, 14);
                 } else {
                     remove.add(tip);
                 }
@@ -101,10 +92,10 @@ public class BookBase extends GuiScreen {
                     case 0: {
                         boolean inside = mouseX >= BASICS.xPosition && mouseX < BASICS.xPosition + BASICS.width && mouseY >= BASICS.yPosition && mouseY < BASICS.yPosition + BASICS.height;
                         if (inside) {
-                            BiMap<String, Integer> tipList = HashBiMap.create();
-                            tipList.put("lorem ipsum dolor", 0);
-                            tipList.put("sit amet potato", 0);
-                            createTip(tipList);
+                            if (tips.isEmpty()) {
+                                tips.put("lorem ipsum dolor", 0);
+                                tips.put("sit amet potato", 0);
+                            }
                             BASICS.drawButton(mc, left + 55, top + 20);
                             mc.renderEngine.bindTexture(Refraction.hovered_icons.get(i));
                             drawScaledCustomSizeModalRect(left + 25, top + 20, 0, 0, 25, 25, 25, 25, 25, 25);
