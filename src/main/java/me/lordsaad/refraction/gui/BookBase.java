@@ -9,23 +9,21 @@ import net.minecraft.util.ResourceLocation;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+
 
 /**
  * Created by Saad on 4/13/2016.
  */
 public class BookBase extends GuiScreen {
 
-    public static final ResourceLocation BACKGROUND_TEXTURE = new ResourceLocation(Refraction.MODID, "textures/gui/book.png");
+    private static final ResourceLocation BACKGROUND_TEXTURE = new ResourceLocation(Refraction.MODID, "textures/gui/book.png");
 
-    public static int guiWidth = 146, guiHeight = 180;
-    public static int left, top;
-    boolean isIndex = true;
-    boolean hovering_basics, hovering_items, hovering_beam, hovering_energy;
+    static int guiWidth = 146, guiHeight = 180;
+    static int left, top;
+    private boolean isIndex = true;
+    private boolean hovering_basics, hovering_items, hovering_beam, hovering_energy;
 
-    LinkedHashMap<String, Integer> tips = new LinkedHashMap<>();
-    ArrayList<String> remove = new ArrayList<>();
-    GuiButton BASICS, ITEMS, BEAM_MANIPULATION, ENERGY;
+    private GuiButton BASICS, ITEMS, BEAM_MANIPULATION, ENERGY;
 
     @Override
     public void initGui() {
@@ -52,6 +50,7 @@ public class BookBase extends GuiScreen {
         if (isIndex) initIndexButtons();
     }
 
+
     @Override
     protected void actionPerformed(GuiButton button) throws IOException {
         if (button.id == 0) {
@@ -61,16 +60,16 @@ public class BookBase extends GuiScreen {
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        if (!tips.isEmpty()) {
+        if (!GuiTip.getTips().isEmpty()) {
             if (hovering_energy || hovering_basics || hovering_beam || hovering_items) {
-                for (int i = 0; i < tips.size(); i++) {
-                    String tip = (new ArrayList<>(tips.keySet()).get(i));
+                for (int i = 0; i < GuiTip.getTips().size(); i++) {
+                    String tip = (new ArrayList<>(GuiTip.getTips().keySet()).get(i));
                     if (tip.length() * 5 + 10 <= 145) {
-                        int tipLoc = tips.get(tip);
+                        int tipLoc = GuiTip.getTips().get(tip);
                         int distance = Math.abs(tipLoc - (tip.length() * -5));
                         if (Math.abs(tipLoc) <= tip.length() * 5) {
                             tipLoc -= distance / 5;
-                            tips.put(tip, tipLoc);
+                            GuiTip.getTips().put(tip, tipLoc);
 
                             GlStateManager.color(1F, 1F, 1F, 1F);
                             mc.renderEngine.bindTexture(BACKGROUND_TEXTURE);
@@ -84,12 +83,12 @@ public class BookBase extends GuiScreen {
                     }
                 }
             } else {
-                for (int i = 0; i < tips.size(); i++) {
-                    String tip = (new ArrayList<>(tips.keySet()).get(i));
-                    int tipLoc = tips.get(tip);
+                for (int i = 0; i < GuiTip.getTips().size(); i++) {
+                    String tip = (new ArrayList<>(GuiTip.getTips().keySet()).get(i));
+                    int tipLoc = GuiTip.getTips().get(tip);
                     int distance = Math.abs(tipLoc - (tip.length()));
                     tipLoc += distance / 5;
-                    tips.put(tip, tipLoc);
+                    GuiTip.getTips().put(tip, tipLoc);
 
                     GlStateManager.color(1F, 1F, 1F, 1F);
                     mc.renderEngine.bindTexture(BACKGROUND_TEXTURE);
@@ -100,8 +99,8 @@ public class BookBase extends GuiScreen {
                     fontRenderer.setBidiFlag(true);
                     fontRenderer.drawString(tip, left + tipLoc + 5, top + 72 + i * 13, 0, false);
 
-                    if (Math.abs(tipLoc) >= tip.length() * 6) tips.remove(tip);
-                    if (tipLoc < 0) tips.remove(tip);
+                    if (Math.abs(tipLoc) >= tip.length() * 6) GuiTip.getTips().remove(tip);
+                    if (tipLoc < 0) GuiTip.getTips().remove(tip);
                 }
             }
         }
@@ -116,11 +115,13 @@ public class BookBase extends GuiScreen {
                         boolean inside = mouseX >= BASICS.xPosition && mouseX < BASICS.xPosition + BASICS.width && mouseY >= BASICS.yPosition && mouseY < BASICS.yPosition + BASICS.height;
                         if (inside) {
                             hovering_basics = true;
-                            if (tips.isEmpty()) {
-                                tips.put("Learn the basics", 0);
-                                tips.put("of light manipulation", 0);
-                                tips.put("and how everything works", 0);
-                            }
+
+                            ArrayList<String> tips = new ArrayList<>();
+                            tips.add("Learn the basics");
+                            tips.add("of light manipulation");
+                            tips.add("and how everything works");
+                            GuiTip.setTip(tips);
+
                             BASICS.drawButton(mc, left + 55, top + 20);
                             mc.renderEngine.bindTexture(Refraction.hovered_icons.get(i));
                             drawScaledCustomSizeModalRect(left + 25, top + 20, 0, 0, 25, 25, 25, 25, 25, 25);
@@ -135,10 +136,12 @@ public class BookBase extends GuiScreen {
                     case 1: {
                         boolean inside = mouseX >= ITEMS.xPosition && mouseX < ITEMS.xPosition + ITEMS.width && mouseY >= ITEMS.yPosition && mouseY < ITEMS.yPosition + ITEMS.height;
                         if (inside) {
-                            if (tips.isEmpty()) {
-                                tips.put("Read what each item and", 0);
-                                tips.put("block in this mod does", 0);
-                            }
+
+                            ArrayList<String> tips = new ArrayList<>();
+                            tips.add("Read what each item and");
+                            tips.add("block in this mod does");
+                            GuiTip.setTip(tips);
+
                             hovering_items = true;
                             ITEMS.drawButton(mc, left + 55, top + 20);
                             mc.renderEngine.bindTexture(Refraction.hovered_icons.get(i));
@@ -154,10 +157,10 @@ public class BookBase extends GuiScreen {
                     case 2: {
                         boolean inside = mouseX >= BEAM_MANIPULATION.xPosition && mouseX < BEAM_MANIPULATION.xPosition + BEAM_MANIPULATION.width && mouseY >= BEAM_MANIPULATION.yPosition && mouseY < BEAM_MANIPULATION.yPosition + BEAM_MANIPULATION.height;
                         if (inside) {
-                            if (tips.isEmpty()) {
-                                tips.put("Learn how to accurate", 0);
-                                tips.put("Manipulate light beams", 0);
-                            }
+                            ArrayList<String> tips = new ArrayList<>();
+                            tips.add("Learn how to accurate");
+                            tips.add("Manipulate light beams");
+                            GuiTip.setTip(tips);
                             hovering_beam = true;
                             BEAM_MANIPULATION.drawButton(mc, left + 90, top + 20);
                             mc.renderEngine.bindTexture(Refraction.hovered_icons.get(i));
@@ -173,11 +176,13 @@ public class BookBase extends GuiScreen {
                     case 3: {
                         boolean inside = mouseX >= ENERGY.xPosition && mouseX < ENERGY.xPosition + ENERGY.width && mouseY >= ENERGY.yPosition && mouseY < ENERGY.yPosition + ENERGY.height;
                         if (inside) {
-                            if (tips.isEmpty()) {
-                                tips.put("Learn how to create,", 0);
-                                tips.put("transport, manipulate,", 0);
-                                tips.put("and store energy", 0);
-                            }
+
+                            ArrayList<String> tips = new ArrayList<>();
+                            tips.add("Learn how to create,");
+                            tips.add("transport, manipulate,");
+                            tips.add("and store energy");
+                            GuiTip.setTip(tips);
+
                             hovering_energy = true;
                             ENERGY.drawButton(mc, left + 25, top + 60);
                             mc.renderEngine.bindTexture(Refraction.hovered_icons.get(i));

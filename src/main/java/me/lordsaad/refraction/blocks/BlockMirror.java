@@ -17,10 +17,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.Mirror;
-import net.minecraft.util.Rotation;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
@@ -107,6 +104,7 @@ public class BlockMirror extends BlockDirectional implements ITileEntityProvider
                         PacketHandler.INSTANCE.sendToAll(packet);
 
                         // RAYTRACE //
+
                         Vec3d centervec = new Vec3d(pos.getX() + 0.5, pos.getY() + 0.8, pos.getZ() + 0.5);
 
                         Vec3d lookvec = Utils.getVectorForRotation3d(mirror.getPitch(), mirror.getYaw()).normalize();
@@ -116,6 +114,18 @@ public class BlockMirror extends BlockDirectional implements ITileEntityProvider
                         RayTraceResult result = worldIn.rayTraceBlocks(startvec, end, false, false, true);
                         playerIn.addChatComponentMessage(new TextComponentString(TextFormatting.YELLOW + "pitch: " + mirror.getPitch() + " -- yaw:" + mirror.getYaw()));
                         playerIn.addChatComponentMessage(new TextComponentString(TextFormatting.YELLOW + worldIn.getBlockState(result.getBlockPos()).getBlock().getLocalizedName()));
+
+
+                        // DRAW LINE //
+                        Vec3d a = new Vec3d(pos.getX() + 0.5, pos.getY() + 0.8, pos.getZ() + 0.5);
+                        Vec3d b = new Vec3d(result.getBlockPos());
+                        Vec3d c = b.subtract(a).scale(1d / 10d);
+                        playerIn.addChatComponentMessage(new TextComponentString(TextFormatting.GREEN + "" + b.xCoord + " - " + b.yCoord + " - " + b.zCoord));
+                        for (int i = 0; i <= 10; i++) {
+                            Vec3d d = a.add(c.scale(i));
+                            playerIn.addChatComponentMessage(new TextComponentString(TextFormatting.YELLOW + "" + d.xCoord + " - " + d.yCoord + " - " + d.zCoord));
+                            worldIn.spawnParticle(EnumParticleTypes.FLAME, d.xCoord, d.yCoord, d.zCoord, 0, 0, 0, 100);
+                        }
                     }
                 } else {
                     blockState.getBlock().dropBlockAsItem(worldIn, pos, state, 1);

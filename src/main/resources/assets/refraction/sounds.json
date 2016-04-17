@@ -1,0 +1,8 @@
+{
+  "whoosh": {
+    "category": "player",
+    "sounds": [
+      "refraction:whoosh"
+    ]
+  }
+}
