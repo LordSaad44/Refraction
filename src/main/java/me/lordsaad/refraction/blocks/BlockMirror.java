@@ -116,7 +116,7 @@ public class BlockMirror extends BlockDirectional implements ITileEntityProvider
                         playerIn.addChatComponentMessage(new TextComponentString(TextFormatting.YELLOW + worldIn.getBlockState(result.getBlockPos()).getBlock().getLocalizedName()));
 
 
-                        // DRAW LINE //
+                        // DRAW LINE // TODO: send packet so its outside !world.isremote
                         Vec3d a = new Vec3d(pos.getX() + 0.5, pos.getY() + 0.8, pos.getZ() + 0.5);
                         Vec3d b = new Vec3d(result.getBlockPos());
                         Vec3d c = b.subtract(a).scale(1d / 10d);

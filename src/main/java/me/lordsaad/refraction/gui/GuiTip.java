@@ -1,33 +1,33 @@
 package me.lordsaad.refraction.gui;
 
-import me.lordsaad.refraction.Refraction;
-import net.minecraft.util.ResourceLocation;
+import com.google.common.base.Splitter;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 
 /**
  * Created by Saad on 4/17/2016.
  */
 public class GuiTip {
 
-    private static final ResourceLocation SLIDER_TEXTURES = new ResourceLocation(Refraction.MODID, "textures/gui/sliders.png");
-
-    private static LinkedHashMap<String, Integer> tips = new LinkedHashMap<>();
+    private static ArrayList<String> tips = new ArrayList<>();
 
     public static void setTip(ArrayList<String> tipList) {
         if (tips.isEmpty()) {
-            for (String tip : tipList) {
-                tips.put(tip, 0);
-            }
+            tips.addAll(tipList);
         }
     }
 
     public static void setTip(String tip) {
-
+        if (tips.isEmpty()) {
+            if (tip.length() > 50) {
+                for (String lines : Splitter.fixedLength(50).split(tip)) {
+                    tips.add(lines);
+                }
+            }
+        }
     }
 
-    public static LinkedHashMap<String, Integer> getTips() {
+    public static ArrayList<String> getTips() {
         return tips;
     }
 }

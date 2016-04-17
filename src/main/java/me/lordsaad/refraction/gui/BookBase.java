@@ -6,6 +6,7 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextComponentString;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -17,9 +18,10 @@ import java.util.ArrayList;
 public class BookBase extends GuiScreen {
 
     private static final ResourceLocation BACKGROUND_TEXTURE = new ResourceLocation(Refraction.MODID, "textures/gui/book.png");
+    private static final ResourceLocation SLIDER_TEXTURES = new ResourceLocation(Refraction.MODID, "textures/gui/sliders.png");
 
     static int guiWidth = 146, guiHeight = 180;
-    static int left, top;
+    static int left, top, tipLoc = 0;
     private boolean isIndex = true;
     private boolean hovering_basics, hovering_items, hovering_beam, hovering_energy;
 
@@ -61,46 +63,59 @@ public class BookBase extends GuiScreen {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         if (!GuiTip.getTips().isEmpty()) {
+            int y1 = 0, y2 = 0;
+            if (GuiTip.getTips().size() == 1) {
+                y1 = 0;
+                y2 = 12;
+            } else if (GuiTip.getTips().size() == 2) {
+                y1 = 14;
+                y2 = 37;
+            } else if (GuiTip.getTips().size() == 3) {
+                y1 = 39;
+                y2 = 72;
+            } else if (GuiTip.getTips().size() == 4) {
+                y1 = 74;
+                y2 = 118;
+            } else if (GuiTip.getTips().size() == 5) {
+                y1 = 120;
+                y2 = 174;
+            } else if (GuiTip.getTips().size() == 6) {
+                y1 = 176;
+                y2 = 240;
+            }
+
             if (hovering_energy || hovering_basics || hovering_beam || hovering_items) {
-                for (int i = 0; i < GuiTip.getTips().size(); i++) {
-                    String tip = (new ArrayList<>(GuiTip.getTips().keySet()).get(i));
-                    if (tip.length() * 5 + 10 <= 145) {
-                        int tipLoc = GuiTip.getTips().get(tip);
-                        int distance = Math.abs(tipLoc - (tip.length() * -5));
-                        if (Math.abs(tipLoc) <= tip.length() * 5) {
-                            tipLoc -= distance / 5;
-                            GuiTip.getTips().put(tip, tipLoc);
+                if (tipLoc > -145) {
+                    tipLoc -= (145 - tipLoc) / 10;
 
-                            GlStateManager.color(1F, 1F, 1F, 1F);
-                            mc.renderEngine.bindTexture(BACKGROUND_TEXTURE);
-                            drawTexturedModalRect(left + tipLoc, top + 70 + i * 13, 19, 202, 164, 14);
+                    GlStateManager.color(1F, 1F, 1F, 1F);
+                    mc.renderEngine.bindTexture(SLIDER_TEXTURES);
+                    drawTexturedModalRect(tipLoc, (height + top) / 2, 0, y1, 145, y2);
 
-                            FontRenderer fontRenderer = fontRendererObj;
-                            fontRenderer.setUnicodeFlag(true);
-                            fontRenderer.setBidiFlag(true);
-                            fontRenderer.drawString(tip, left + tipLoc + 5, top + 72 + i * 13, 0, false);
-                        }
+                    mc.thePlayer.addChatComponentMessage(new TextComponentString(tipLoc + ""));
+                    for (String tip : GuiTip.getTips()) {
+                        FontRenderer fontRenderer = fontRendererObj;
+                        fontRenderer.setUnicodeFlag(true);
+                        fontRenderer.setBidiFlag(true);
+                        fontRenderer.drawString(tip, tipLoc + 5, top + 72, 0, false);
                     }
                 }
             } else {
-                for (int i = 0; i < GuiTip.getTips().size(); i++) {
-                    String tip = (new ArrayList<>(GuiTip.getTips().keySet()).get(i));
-                    int tipLoc = GuiTip.getTips().get(tip);
-                    int distance = Math.abs(tipLoc - (tip.length()));
-                    tipLoc += distance / 5;
-                    GuiTip.getTips().put(tip, tipLoc);
+                if (tipLoc < 0) {
+                    tipLoc += (tipLoc - 145) / 10;
 
                     GlStateManager.color(1F, 1F, 1F, 1F);
-                    mc.renderEngine.bindTexture(BACKGROUND_TEXTURE);
-                    drawTexturedModalRect(left + tipLoc, top + 70 + i * 13, 19, 202, tip.length() * 5 + 10, 14);
+                    mc.renderEngine.bindTexture(SLIDER_TEXTURES);
+                    drawTexturedModalRect(left + tipLoc, top + 70, 0, y1, 145, y2);
 
-                    FontRenderer fontRenderer = fontRendererObj;
-                    fontRenderer.setUnicodeFlag(true);
-                    fontRenderer.setBidiFlag(true);
-                    fontRenderer.drawString(tip, left + tipLoc + 5, top + 72 + i * 13, 0, false);
-
-                    if (Math.abs(tipLoc) >= tip.length() * 6) GuiTip.getTips().remove(tip);
-                    if (tipLoc < 0) GuiTip.getTips().remove(tip);
+                    mc.thePlayer.addChatComponentMessage(new TextComponentString(tipLoc + ""));
+                    for (String tip : GuiTip.getTips()) {
+                        FontRenderer fontRenderer = fontRendererObj;
+                        fontRenderer.setUnicodeFlag(true);
+                        fontRenderer.setBidiFlag(true);
+                        fontRenderer.drawString(tip, left + tipLoc + 5, top + 72, 0, false);
+                    }
+                    if (tipLoc == 145 || tipLoc == 0) GuiTip.getTips().clear();
                 }
             }
         }
@@ -115,13 +130,7 @@ public class BookBase extends GuiScreen {
                         boolean inside = mouseX >= BASICS.xPosition && mouseX < BASICS.xPosition + BASICS.width && mouseY >= BASICS.yPosition && mouseY < BASICS.yPosition + BASICS.height;
                         if (inside) {
                             hovering_basics = true;
-
-                            ArrayList<String> tips = new ArrayList<>();
-                            tips.add("Learn the basics");
-                            tips.add("of light manipulation");
-                            tips.add("and how everything works");
-                            GuiTip.setTip(tips);
-
+                            GuiTip.setTip("Learn the basics of light manipulation and how everything works");
                             BASICS.drawButton(mc, left + 55, top + 20);
                             mc.renderEngine.bindTexture(Refraction.hovered_icons.get(i));
                             drawScaledCustomSizeModalRect(left + 25, top + 20, 0, 0, 25, 25, 25, 25, 25, 25);
