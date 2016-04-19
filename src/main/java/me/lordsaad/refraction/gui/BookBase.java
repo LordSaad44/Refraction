@@ -1,14 +1,15 @@
 package me.lordsaad.refraction.gui;
 
 import me.lordsaad.refraction.Refraction;
+import me.lordsaad.refraction.Utils;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.TextComponentString;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
 /**
@@ -17,12 +18,12 @@ import java.util.LinkedHashMap;
 public class BookBase extends GuiScreen {
 
     private static final ResourceLocation BACKGROUND_TEXTURE = new ResourceLocation(Refraction.MODID, "textures/gui/book.png");
-    private static final ResourceLocation SLIDER_TEXTURES = new ResourceLocation(Refraction.MODID, "textures/gui/sliders.png");
-    public static LinkedHashMap<String, Double> tipLocations = new LinkedHashMap<>();
-    public static LinkedHashMap<String, Integer> tipTimes = new LinkedHashMap<>();
     static int guiWidth = 146, guiHeight = 180;
     static int left, top;
-    static int getNextTip = 0;
+    private LinkedHashMap<String, Double> tipLocations = new LinkedHashMap<>();
+    private LinkedHashMap<String, Boolean> tipComplete = new LinkedHashMap<>();
+    private ArrayList<String> remove = new ArrayList<>();
+    private String nextTip, lastTip;
     private boolean isIndex = true;
 
     private GuiButton BASICS, ITEMS, BEAM_MANIPULATION, ENERGY;
@@ -52,6 +53,13 @@ public class BookBase extends GuiScreen {
         if (isIndex) initIndexButtons();
     }
 
+    public void addTip(String tip) {
+        if (!tipLocations.containsKey(tip)) {
+            tipLocations.put(tip, 0d);
+            tipComplete.put(tip, false);
+            nextTip = tip;
+        }
+    }
 
     @Override
     protected void actionPerformed(GuiButton button) throws IOException {
@@ -62,60 +70,43 @@ public class BookBase extends GuiScreen {
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+        FontRenderer renderer = fontRendererObj;
+        renderer.setUnicodeFlag(true);
+        renderer.setBidiFlag(true);
+
         if (!tipLocations.isEmpty()) {
+            for (String tip : tipLocations.keySet()) {
 
-            String tip = GuiTip.getIndexedTips().get(getNextTip);
-            int y1 = 0, y2 = 0;
-            if (tip.length() <= 38) {
-                y1 = 0;
-                y2 = 13;
-            } else if (tip.length() <= 76) {
-                y1 = 14;
-                y2 = 38;
-            } else if (tip.length() <= 114) {
-                y1 = 39;
-                y2 = 73;
-            } else if (tip.length() <= 152) {
-                y1 = 74;
-                y2 = 119;
-            } else if (tip.length() <= 190) {
-                y1 = 120;
-                y2 = 175;
-            } else if (tip.length() <= 228) {
-                y1 = 176;
-                y2 = 241;
-            }
+                double tipLoc = tipLocations.get(tip);
+                double distance = 145 - Math.abs(tipLoc);
 
-            double tipLoc = tipLocations.get(tip);
-            double distance = 145 - Math.abs(tipLoc);
-            if (distance < 0.1) distance = 0;
-            mc.thePlayer.addChatComponentMessage(new TextComponentString(tipLoc + " - " + distance));
+                if (distance < 0.1) {
+                    tipComplete.put(tip, true);
+                    if (lastTip == null || !lastTip.equals(tip))
+                        lastTip = tip;
 
-            tipLoc -= distance / 5;
-            tipLocations.put(tip, tipLoc);
+                    if (!nextTip.equals(tip) && tipComplete.get(nextTip))
+                        remove.add(tip);
 
-            GlStateManager.color(1F, 1F, 1F, 1F);
-            mc.renderEngine.bindTexture(SLIDER_TEXTURES);
-            drawTexturedModalRect((float) (left + tipLoc), height / 2, 0, y1, 145, y2);
-
-            FontRenderer fontRenderer = fontRendererObj;
-            fontRenderer.setUnicodeFlag(true);
-            fontRenderer.setBidiFlag(true);
-            fontRenderer.drawString(tip.replaceAll("(.{38})", "$1\n"), (float) (left + tipLoc) + 3, height / 2 + 2, 0, false);
-
-            if (distance == 0) {
-                if (getNextTip - 1 < 0) {
-                    if (tipLocations.size() > 1) {
-                        tipLocations.remove(tip);
-                        tipTimes.remove(tip);
-                        getNextTip++;
-                    }
-                } else {
-                    tipLocations.remove(tip);
-                    tipTimes.remove(tip);
-                    getNextTip--;
+                } else if (distance >= 0.1) {
+                    tipLoc -= distance / 5;
+                    tipLocations.put(tip, tipLoc);
                 }
+
+                GlStateManager.color(1F, 1F, 1F, 1F);
+                mc.renderEngine.bindTexture(BACKGROUND_TEXTURE);
+                drawTexturedModalRect((float) (left + tipLoc / 1.13), (float) (height / 2.5), 19, 211, 133, 37);
+
+                ArrayList<String> lines = Utils.padString(tip, 31);
+                for (String line : lines)
+                    renderer.drawString(line.trim(), (float) (left + tipLoc / 1.13) + 5, (float) ((height / 2.5 + 3) + lines.indexOf(line) * 8), 0, false);
             }
+
+            for (String rem : remove) {
+                tipLocations.remove(rem);
+                tipComplete.remove(rem);
+            }
+            remove.clear();
         }
 
         GlStateManager.color(1F, 1F, 1F, 1F);
@@ -130,7 +121,7 @@ public class BookBase extends GuiScreen {
                         boolean inside = mouseX >= BASICS.xPosition && mouseX < BASICS.xPosition + BASICS.width && mouseY >= BASICS.yPosition && mouseY < BASICS.yPosition + BASICS.height;
                         if (inside) {
 
-                            GuiTip.addTip("Learn the basics of light manipulation and how everything works.");
+                            addTip("Learn the basics of light manipulation and how everything works.");
 
                             BASICS.drawButton(mc, left + 55, top + 20);
                             mc.renderEngine.bindTexture(Refraction.hovered_icons.get(i));
@@ -146,7 +137,7 @@ public class BookBase extends GuiScreen {
                         boolean inside = mouseX >= ITEMS.xPosition && mouseX < ITEMS.xPosition + ITEMS.width && mouseY >= ITEMS.yPosition && mouseY < ITEMS.yPosition + ITEMS.height;
                         if (inside) {
 
-                            GuiTip.addTip("Read about what each item and block in this mod does.");
+                            addTip("Read about what each item and block in this mod does.");
 
                             ITEMS.drawButton(mc, left + 55, top + 20);
                             mc.renderEngine.bindTexture(Refraction.hovered_icons.get(i));
@@ -162,7 +153,7 @@ public class BookBase extends GuiScreen {
                         boolean inside = mouseX >= BEAM_MANIPULATION.xPosition && mouseX < BEAM_MANIPULATION.xPosition + BEAM_MANIPULATION.width && mouseY >= BEAM_MANIPULATION.yPosition && mouseY < BEAM_MANIPULATION.yPosition + BEAM_MANIPULATION.height;
                         if (inside) {
 
-                            GuiTip.addTip("Learn how to accurately manipulate light beams.");
+                            addTip("Learn how to accurately manipulate light beams.");
 
                             BEAM_MANIPULATION.drawButton(mc, left + 90, top + 20);
                             mc.renderEngine.bindTexture(Refraction.hovered_icons.get(i));
@@ -178,7 +169,7 @@ public class BookBase extends GuiScreen {
                         boolean inside = mouseX >= ENERGY.xPosition && mouseX < ENERGY.xPosition + ENERGY.width && mouseY >= ENERGY.yPosition && mouseY < ENERGY.yPosition + ENERGY.height;
                         if (inside) {
 
-                            GuiTip.addTip("Learn how to create, transport, manipulate, and store energy.");
+                            addTip("Learn how to create, transport, manipulate, and store energy.");
 
                             ENERGY.drawButton(mc, left + 25, top + 60);
                             mc.renderEngine.bindTexture(Refraction.hovered_icons.get(i));
@@ -195,14 +186,11 @@ public class BookBase extends GuiScreen {
         }
 
         mc.renderEngine.bindTexture(BACKGROUND_TEXTURE);
-
-        drawTexturedModalRect((width / 2) - 65, 70, 20, 182, 133, 14);
-        FontRenderer fontRenderer = fontRendererObj;
-        fontRenderer.setUnicodeFlag(false);
-        fontRenderer.setBidiFlag(false);
-        fontRenderer.drawString("Physics Book", (width / 2) - 30, 74, 0, false);
+        drawTexturedModalRect((width / 2) - 65, (float) (top - 20), 20, 182, 133, 14);
+        renderer.setUnicodeFlag(false);
+        renderer.setBidiFlag(false);
+        renderer.drawString("Physics Book", (width / 2) - 30, (float) (top - 20) + 4, 0, false);
         super.drawScreen(mouseX, mouseY, partialTicks);
-
     }
 
     @Override
