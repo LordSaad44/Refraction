@@ -8,7 +8,7 @@ import net.minecraftforge.fml.common.network.IGuiHandler;
  * Created by Saad on 4/13/2016.
  */
 public class GuiHandler implements IGuiHandler {
-    public static int INDEX = 0;
+    public static int INDEX = 0, BASICS = 1;
 
     @Override
     public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
@@ -18,7 +18,10 @@ public class GuiHandler implements IGuiHandler {
     @Override
     public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
         if (ID == INDEX) {
-            return new BookBase();
+            return new BookIndex();
+        }
+        if (ID == BASICS) {
+            return new BookBasics();
         }
         return null;
     }
