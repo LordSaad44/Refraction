@@ -1,6 +1,5 @@
 package me.lordsaad.refraction.gui;
 
-import com.google.common.io.Files;
 import me.lordsaad.refraction.Refraction;
 import me.lordsaad.refraction.Utils;
 import net.minecraft.client.gui.FontRenderer;
@@ -8,23 +7,17 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
-
-import static com.google.common.base.Charsets.UTF_8;
 
 /**
  * Created by Saad on 4/19/2016.
  */
 public class BookBase extends GuiScreen {
 
-    public static GuiScreen currentPage;
     static int guiWidth = 146, guiHeight = 180;
     static int left, top;
-    ResourceLocation BACKGROUND_TEXTURE = new ResourceLocation(Refraction.MODID, "textures/gui/book.png");
+    static ResourceLocation BACKGROUND_TEXTURE = new ResourceLocation(Refraction.MODID, "textures/gui/book.png");
     private LinkedHashMap<String, Double> tipLocations = new LinkedHashMap<>();
     private LinkedHashMap<String, Boolean> tipComplete = new LinkedHashMap<>();
     private ArrayList<String> remove = new ArrayList<>();
@@ -36,7 +29,7 @@ public class BookBase extends GuiScreen {
         super.initGui();
         left = width / 2 - guiWidth / 2;
         top = height / 2 - guiHeight / 2;
-        if (currentPage == null) currentPage = new BookIndex();
+        //if (currentPage == null) currentPage = new BookIndex();
         //setIndex(true);
     }
 
@@ -95,36 +88,6 @@ public class BookBase extends GuiScreen {
                 tipComplete.remove(rem);
             }
             remove.clear();
-        }
-
-        List<String> txt = null;
-        try {
-            //TODO: invalid file apparently
-            txt = Files.readLines(new File(getClass().getResource("assets/refraction/documentation/Basics.txt").getFile()), UTF_8);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        if (txt != null) {
-            int height = 0;
-            for (String lines : txt) {
-                switch (lines) {
-                    case "/n":
-                        height++;
-                        break;
-                    case "/b":
-                        fontRendererObj.drawString("---------------------------------", left + 20, top + 15 +
-                                (height * 8), 0, false);
-                        height++;
-                        break;
-                    default:
-                        for (String pads : Utils.padString(lines, 35)) {
-                            fontRendererObj.drawString(pads, left + 20, top + 15 + (height * 8), 0, false);
-                            height++;
-                        }
-                        break;
-                }
-            }
         }
 
         GlStateManager.color(1F, 1F, 1F, 1F);

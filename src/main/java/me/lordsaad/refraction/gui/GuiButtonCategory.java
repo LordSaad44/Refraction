@@ -11,8 +11,8 @@ import net.minecraft.init.SoundEvents;
  */
 public class GuiButtonCategory extends GuiButton {
 
-    public GuiButtonCategory(int buttonId, int x, int y, int widthIn, int heightIn, String buttonText) {
-        super(buttonId, x, y, widthIn, heightIn, buttonText);
+    public GuiButtonCategory(int buttonId, float x, float y, float width, float height) {
+        super(buttonId, (int) x, (int) y, (int) width, (int) height, "");
     }
 
     @Override
