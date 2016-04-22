@@ -4,7 +4,8 @@ This mod; if you didn't already know; is all about light manipulation in order t
 /b
 You can manipulate light through various means. However, in order to control such means, you of course need yet another tool in your tool-belt. No it's not a wrench, don't worry...
 /p
-*It's a [[screwdriver]] instead!*
+/r:refraction:screwdriver;Oh god, not another one!
+*It's a screwdriver instead!*
 /b
 With the screwdriver, you will be able to very finely manipulate and/or adjust most of the blocks in this mod by right-clicking said blocks in a certain part of each block's face. Example: Right clicking the right part of a mirror's hit-box will tilt it slightly over to the right side.
 /p

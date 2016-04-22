@@ -17,7 +17,6 @@ public class GuiButtonCategory extends GuiButton {
 
     @Override
     public void drawButton(Minecraft mc, int mouseX, int mouseY) {
-
     }
 
     @Override

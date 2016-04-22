@@ -4,7 +4,8 @@ import me.lordsaad.refraction.Refraction;
 import me.lordsaad.refraction.Utils;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -19,13 +20,14 @@ import java.util.List;
  */
 public class BookBasics extends BookBase {
 
+    private static HashMap<Integer, ArrayList<String>> pages;
+    private static int currentPage = 0;
     private GuiButton BACK, NEXT, TOINDEX;
-    private HashMap<Integer, ArrayList<String>> pageLines = new HashMap<>();
-    private int currentPage;
 
     @Override
     public void initGui() {
         super.initGui();
+        pages = new HashMap<>();
         initButtons();
         splitTextToPages();
     }
@@ -54,96 +56,87 @@ public class BookBasics extends BookBase {
             e.printStackTrace();
         }
 
-        ArrayList<String> page = new ArrayList<>();
-        ArrayList<String> trailingText = new ArrayList<>();
-        ArrayList<String> stupidBackupTrailingText = new ArrayList<>();
         int pagenb = 0;
-        boolean onPage = true;
+        for (String line : txt) {
+            pages.putIfAbsent(pagenb, new ArrayList<>());
 
-        // TRAILING TEXT //
-        if (!stupidBackupTrailingText.isEmpty()) {
-            for (String trails : stupidBackupTrailingText) {
-                if (page.size() < 18) {
-                    page.add(trails);
-                } else {
-                    mc.thePlayer.addChatComponentMessage(new TextComponentString("Page text is trailing. " +
-                            "Please break the doc text with /p (to force a new page)"));
-                }
-            }
-        }
-        if (!trailingText.isEmpty()) {
-            for (String trails : trailingText) {
-                if (page.size() < 18) {
-                    page.add(trails);
-                } else {
-                    stupidBackupTrailingText.add(trails);
-                }
-            }
-        }
-        // TRAILING TEXT //
+            if (pages.get(pagenb).size() >= 15) pagenb++;
 
-        for (String lines : txt) {
-            if (page.size() < 18 && onPage) {
-                switch (lines) {
-                    case "/n":
-                        page.add(" ");
-                        break;
-                    case "/b":
-                        page.add("----------------------");
-                        break;
-                    case "/p":
-                        onPage = false;
-                    default:
-                        for (String padded : Utils.padString(lines, 30)) {
-                            if (page.size() < 18) {
-                                page.add(padded);
-                            } else {
-                                trailingText.add(padded);
-                            }
-                        }
-                        break;
+            if (line.contains("/n"))
+                pages.get(pagenb).add(" ");
+
+            else if (line.contains("/b"))
+                pages.get(pagenb).add("-----------------------------");
+
+            else if (line.contains("/p")) {
+                pagenb++;
+                pages.putIfAbsent(pagenb, new ArrayList<>());
+
+            } else if (line.contains("/r:")) {
+                Item item = Item.getByNameOrId(line.substring(line.indexOf("/r:")));
+                if (item != null) {
+                    setRecipeTip(line.split(";")[1], new ItemStack(item));
                 }
             } else {
-                pageLines.put(pagenb, page);
-                pagenb++;
-                onPage = true;
-                page.clear();
+                ArrayList<String> pads = Utils.padString(line, 30);
+                for (String padded : pads) {
+                    if (pads.size() < 15) {
+                        pages.get(pagenb).add(padded);
+                    } else {
+                        pagenb++;
+                        pages.putIfAbsent(pagenb, new ArrayList<>());
+                        pages.get(pagenb).add(padded);
+                    }
+                }
             }
         }
     }
 
     @Override
     protected void actionPerformed(GuiButton button) throws IOException {
-        if (button.id == 2) {
-            mc.thePlayer.openGui(Refraction.instance, GuiHandler.INDEX, mc.theWorld, (int) mc.thePlayer.posX, (int)
-                    mc.thePlayer.posY, (int) mc.thePlayer.posZ);
-        }
-        if (button.id == 1) {
-            if (pageLines.size() + 1 > currentPage)
-                currentPage++;
-        }
-        if (button.id == 0) {
-            if (currentPage > 0) {
-                currentPage--;
-            } else {
+        switch (button.id) {
+            case 0: {
+                if (currentPage > 0) {
+                    currentPage--;
+                    mc.thePlayer.openGui(Refraction.instance, GuiHandler.BASICS, mc.theWorld, (int) mc.thePlayer.posX, (int)
+                            mc.thePlayer.posY, (int) mc.thePlayer.posZ);
+                } else {
+                    mc.thePlayer.openGui(Refraction.instance, GuiHandler.INDEX, mc.theWorld, (int) mc.thePlayer.posX, (int)
+                            mc.thePlayer.posY, (int) mc.thePlayer.posZ);
+                    currentPage = 0;
+                }
+                break;
+            }
+            case 1: {
+                if (pages.size() + 1 > currentPage) {
+                    currentPage++;
+                    mc.thePlayer.openGui(Refraction.instance, GuiHandler.BASICS, mc.theWorld, (int) mc.thePlayer.posX, (int)
+                            mc.thePlayer.posY, (int) mc.thePlayer.posZ);
+                }
+                break;
+            }
+            case 2: {
                 mc.thePlayer.openGui(Refraction.instance, GuiHandler.INDEX, mc.theWorld, (int) mc.thePlayer.posX, (int)
                         mc.thePlayer.posY, (int) mc.thePlayer.posZ);
+                currentPage = 0;
+                break;
             }
         }
     }
+
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         super.drawScreen(mouseX, mouseY, partialTicks);
 
         fontRendererObj.setUnicodeFlag(true);
-        fontRendererObj.setBidiFlag(true);
 
         int height = 0;
-        for (String lines : pageLines.get(currentPage)) {
-            fontRendererObj.drawString(lines, left + 17, top + 13 + (height * 8), 0, false);
-            height++;
-        }
+        if (pages.containsKey(currentPage))
+            for (String line : pages.get(currentPage)) {
+                fontRendererObj.drawString(line, left + 17, top + 13 + (height * 8), 0, false);
+                height++;
+            }
 
         GlStateManager.color(1F, 1F, 1F, 1F);
 

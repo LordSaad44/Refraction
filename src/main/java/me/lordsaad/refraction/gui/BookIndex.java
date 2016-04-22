@@ -12,7 +12,7 @@ import java.util.HashMap;
  */
 public class BookIndex extends BookBase {
 
-    private GuiButton BASICS, ITEMS, BEAM_MANIPULATION, ENERGY;
+    private boolean didInit = false;
     private HashMap<GuiButton, String> tips = new HashMap<>();
     private HashMap<GuiButton, ResourceLocation> regularTextures = new HashMap<>();
     private HashMap<GuiButton, ResourceLocation> hoverTextures = new HashMap<>();
@@ -20,7 +20,6 @@ public class BookIndex extends BookBase {
     @Override
     public void initGui() {
         super.initGui();
-        initIndexButtons();
     }
 
     private void initIndexButtons() {
@@ -38,6 +37,7 @@ public class BookIndex extends BookBase {
         addButton(new GuiButtonCategory(2, left + 90, top + 20, 25, 25), ringed_beam, ringed_beam_hover, "Learn " +
                 "how to accurately manipulate light beams.");
         addButton(new GuiButtonCategory(3, left + 25, top + 60, 25, 25), sun_rad, sun_rad_hover, "Learn how to create, transport, manipulate, and store energy.");
+        didInit = true;
     }
 
     public void addButton(GuiButtonCategory button, ResourceLocation regularTexture, ResourceLocation
@@ -51,8 +51,8 @@ public class BookIndex extends BookBase {
     @Override
     protected void actionPerformed(GuiButton button) throws IOException {
         if (button.id == 0) {
-            setIndex(false);
-            mc.thePlayer.openGui(Refraction.instance, GuiHandler.BASICS, mc.theWorld, (int) mc.thePlayer.posX, (int) mc.thePlayer.posY, (int) mc.thePlayer.posZ);
+            mc.thePlayer.openGui(Refraction.instance, GuiHandler.BASICS, mc.theWorld, (int) mc.thePlayer.posX, (int)
+                    mc.thePlayer.posY, (int) mc.thePlayer.posZ);
         }
     }
 
@@ -60,21 +60,27 @@ public class BookIndex extends BookBase {
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         super.drawScreen(mouseX, mouseY, partialTicks);
 
-        int rowIndex = 0, height = 0, separation = 15, icon_size = 25;
+        if (!didInit) initIndexButtons();
+
+        int rowIndex = 0, height = 0, separation = 15, iconSize = 25;
         for (GuiButton button : buttonList) {
 
             boolean inside = mouseX >= button.xPosition && mouseX < button.xPosition + button.width && mouseY >= button.yPosition && mouseY < button.yPosition + button.height;
-            int x = left + separation + (rowIndex * icon_size) + (rowIndex * separation);
-            int y = top + separation + (height * icon_size) + (height * separation);
+            int x = left + separation + (rowIndex * iconSize) + (rowIndex * separation);
+            int y = top + separation + (height * iconSize) + (height * separation);
+
+            button.xPosition = x;
+            button.yPosition = y;
+            button.width = iconSize;
+            button.height = iconSize;
 
             if (inside) {
-                setTip(tips.get(button));
+                setTextTip(tips.get(button));
                 mc.renderEngine.bindTexture(hoverTextures.get(button));
             } else
                 mc.renderEngine.bindTexture(regularTextures.get(button));
 
-            button.drawButton(mc, x, y);
-            drawScaledCustomSizeModalRect(x, y, 0, 0, icon_size, icon_size, icon_size, icon_size, icon_size, icon_size);
+            drawScaledCustomSizeModalRect(x, y, 0, 0, iconSize, iconSize, iconSize, iconSize, iconSize, iconSize);
 
             if (rowIndex < 2) rowIndex++;
             else {
