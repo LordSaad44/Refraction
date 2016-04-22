@@ -43,7 +43,7 @@ public class BookBase extends GuiScreen {
 
     }
 
-    public void addTip(String tip) {
+    public void setTip(String tip) {
         if (!tipLocations.containsKey(tip)) {
             tipLocations.put(tip, 0d);
             tipComplete.put(tip, false);

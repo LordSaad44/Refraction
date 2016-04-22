@@ -1,8 +1,10 @@
 package me.lordsaad.refraction.gui;
 
+import me.lordsaad.refraction.Refraction;
 import me.lordsaad.refraction.Utils;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.util.text.TextComponentString;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -31,8 +33,8 @@ public class BookBasics extends BookBase {
     private void initButtons() {
         buttonList.clear();
         buttonList.add(BACK = new GuiButtonCategory(0, left, top * 3, 9, 18));
-        buttonList.add(NEXT = new GuiButtonCategory(1, width / 2, top * 3, 9, 18));
-        buttonList.add(TOINDEX = new GuiButtonCategory(2, 0, 199, 18, 18));
+        buttonList.add(NEXT = new GuiButtonCategory(1, left + 135, top * 3, 9, 18));
+        buttonList.add(TOINDEX = new GuiButtonCategory(2, left + 60, top * 3 + 10, 18, 18));
     }
 
     private void splitTextToPages() {
@@ -47,42 +49,87 @@ public class BookBasics extends BookBase {
                 }
                 txt.add(line);
             }
-
             reader.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        int height = 0, pagenb = 0;
         ArrayList<String> page = new ArrayList<>();
+        ArrayList<String> trailingText = new ArrayList<>();
+        ArrayList<String> stupidBackupTrailingText = new ArrayList<>();
+        int pagenb = 0;
+        boolean onPage = true;
+
+        // TRAILING TEXT //
+        if (!stupidBackupTrailingText.isEmpty()) {
+            for (String trails : stupidBackupTrailingText) {
+                if (page.size() < 18) {
+                    page.add(trails);
+                } else {
+                    mc.thePlayer.addChatComponentMessage(new TextComponentString("Page text is trailing. " +
+                            "Please break the doc text with /p (to force a new page)"));
+                }
+            }
+        }
+        if (!trailingText.isEmpty()) {
+            for (String trails : trailingText) {
+                if (page.size() < 18) {
+                    page.add(trails);
+                } else {
+                    stupidBackupTrailingText.add(trails);
+                }
+            }
+        }
+        // TRAILING TEXT //
+
         for (String lines : txt) {
-            if (height <= 10) {
+            if (page.size() < 18 && onPage) {
                 switch (lines) {
                     case "/n":
-                        height++;
+                        page.add(" ");
                         break;
                     case "/b":
                         page.add("----------------------");
-                        //fontRendererObj.drawString("----------------------", left + 20, top + 15 + (height * 8), 0,
-                        // false);
-                        height++;
                         break;
+                    case "/p":
+                        onPage = false;
                     default:
-                        for (String pads : Utils.padString(lines, 30)) {
-                            page.add(pads);
-                            //fontRendererObj.drawString(pads, left + 17, top + 15 + (height * 8), 0, false);
-                            height++;
+                        for (String padded : Utils.padString(lines, 30)) {
+                            if (page.size() < 18) {
+                                page.add(padded);
+                            } else {
+                                trailingText.add(padded);
+                            }
                         }
                         break;
                 }
-                mc.thePlayer.sendChatMessage(height + "");
             } else {
                 pageLines.put(pagenb, page);
-                height = 0;
                 pagenb++;
+                onPage = true;
+                page.clear();
             }
         }
+    }
 
+    @Override
+    protected void actionPerformed(GuiButton button) throws IOException {
+        if (button.id == 2) {
+            mc.thePlayer.openGui(Refraction.instance, GuiHandler.INDEX, mc.theWorld, (int) mc.thePlayer.posX, (int)
+                    mc.thePlayer.posY, (int) mc.thePlayer.posZ);
+        }
+        if (button.id == 1) {
+            if (pageLines.size() + 1 > currentPage)
+                currentPage++;
+        }
+        if (button.id == 0) {
+            if (currentPage > 0) {
+                currentPage--;
+            } else {
+                mc.thePlayer.openGui(Refraction.instance, GuiHandler.INDEX, mc.theWorld, (int) mc.thePlayer.posX, (int)
+                        mc.thePlayer.posY, (int) mc.thePlayer.posZ);
+            }
+        }
     }
 
     @Override
@@ -94,24 +141,25 @@ public class BookBasics extends BookBase {
 
         int height = 0;
         for (String lines : pageLines.get(currentPage)) {
-            fontRendererObj.drawString(lines, left + 17, top + 15 + (height * 8), 0, false);
+            fontRendererObj.drawString(lines, left + 17, top + 13 + (height * 8), 0, false);
             height++;
         }
 
+        GlStateManager.color(1F, 1F, 1F, 1F);
+
         BACK.drawButton(mc, left, top * 3);
         mc.renderEngine.bindTexture(BACKGROUND_TEXTURE);
-        drawTexturedModalRect(left, top * 3, 0, 180, 9, 18);
+        drawTexturedModalRect(left, top * 3, 0, 180, 10, 18);
 
-        NEXT.drawButton(mc, width / 2, top * 3);
+        NEXT.drawButton(mc, left + 135, top * 3);
         mc.renderEngine.bindTexture(BACKGROUND_TEXTURE);
-        drawTexturedModalRect(width / 2, top * 3, 0, 189, 9, 18);
+        drawTexturedModalRect(left + 135, top * 3, 10, 180, 10, 18);
 
-        TOINDEX.drawButton(mc, width / 2, top * 3 + 10);
+        TOINDEX.drawButton(mc, left + 60, top * 3 + 10);
         mc.renderEngine.bindTexture(BACKGROUND_TEXTURE);
-        drawTexturedModalRect((float) (width / 1.5), top * 3 + 10, 0, 199, 18, 18);
+        drawTexturedModalRect(left + 60, top * 3 + 10, 0, 199, 18, 18);
 
 
-        GlStateManager.color(1F, 1F, 1F, 1F);
         mc.renderEngine.bindTexture(BACKGROUND_TEXTURE);
         drawTexturedModalRect((width / 2) - 65, (float) (top - 20), 20, 182, 133, 14);
         fontRendererObj.setUnicodeFlag(false);

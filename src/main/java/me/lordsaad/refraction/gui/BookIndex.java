@@ -2,8 +2,10 @@ package me.lordsaad.refraction.gui;
 
 import me.lordsaad.refraction.Refraction;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.util.ResourceLocation;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 /**
  * Created by Saad on 4/13/2016.
@@ -11,6 +13,9 @@ import java.io.IOException;
 public class BookIndex extends BookBase {
 
     private GuiButton BASICS, ITEMS, BEAM_MANIPULATION, ENERGY;
+    private HashMap<GuiButton, String> tips = new HashMap<>();
+    private HashMap<GuiButton, ResourceLocation> regularTextures = new HashMap<>();
+    private HashMap<GuiButton, ResourceLocation> hoverTextures = new HashMap<>();
 
     @Override
     public void initGui() {
@@ -19,10 +24,28 @@ public class BookIndex extends BookBase {
     }
 
     private void initIndexButtons() {
-        buttonList.add(BASICS = new GuiButtonCategory(0, left + 25, top + 20, 25, 25));
-        buttonList.add(ITEMS = new GuiButtonCategory(1, left + 55, top + 20, 25, 25));
-        buttonList.add(BEAM_MANIPULATION = new GuiButtonCategory(2, left + 90, top + 20, 25, 25));
-        buttonList.add(ENERGY = new GuiButtonCategory(3, left + 25, top + 60, 25, 25));
+        ResourceLocation bulb = new ResourceLocation(Refraction.MODID, "textures/gui/icons/light-bulb.png");
+        ResourceLocation bulb_hover = new ResourceLocation(Refraction.MODID, "textures/gui/icons/light-bulb-hover.png");
+        ResourceLocation laser_blast = new ResourceLocation(Refraction.MODID, "textures/gui/icons/laser-blast.png");
+        ResourceLocation laser_blast_hover = new ResourceLocation(Refraction.MODID, "textures/gui/icons/laser-blast-hover.png");
+        ResourceLocation ringed_beam = new ResourceLocation(Refraction.MODID, "textures/gui/icons/ringed-beam.png");
+        ResourceLocation ringed_beam_hover = new ResourceLocation(Refraction.MODID, "textures/gui/icons/ringed-beam-hover.png");
+        ResourceLocation sun_rad = new ResourceLocation(Refraction.MODID, "textures/gui/icons/sun-radiations.png");
+        ResourceLocation sun_rad_hover = new ResourceLocation(Refraction.MODID, "textures/gui/icons/sun-radiations-hover.png");
+
+        addButton(new GuiButtonCategory(0, left + 25, top + 20, 25, 25), bulb, bulb_hover, "Learn the basics of light manipulation and how everything works.");
+        addButton(new GuiButtonCategory(1, left + 55, top + 20, 25, 25), laser_blast, laser_blast_hover, "Read about what each item and block in this mod does.");
+        addButton(new GuiButtonCategory(2, left + 90, top + 20, 25, 25), ringed_beam, ringed_beam_hover, "Learn " +
+                "how to accurately manipulate light beams.");
+        addButton(new GuiButtonCategory(3, left + 25, top + 60, 25, 25), sun_rad, sun_rad_hover, "Learn how to create, transport, manipulate, and store energy.");
+    }
+
+    public void addButton(GuiButtonCategory button, ResourceLocation regularTexture, ResourceLocation
+            hoverTexture, String tip) {
+        buttonList.add(button);
+        tips.put(button, tip);
+        regularTextures.put(button, regularTexture);
+        hoverTextures.put(button, hoverTexture);
     }
 
     @Override
@@ -35,81 +58,35 @@ public class BookIndex extends BookBase {
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        for (int i = 0; i < 4; i++) {
-            switch (i) {
-                case 0: {
-                    boolean inside = mouseX >= BASICS.xPosition && mouseX < BASICS.xPosition + BASICS.width && mouseY >= BASICS.yPosition && mouseY < BASICS.yPosition + BASICS.height;
-                    if (inside) {
+        super.drawScreen(mouseX, mouseY, partialTicks);
 
-                        addTip("Learn the basics of light manipulation and how everything works.");
+        int rowIndex = 0, height = 0, separation = 15, icon_size = 25;
+        for (GuiButton button : buttonList) {
 
-                        BASICS.drawButton(mc, left + 25, top + 20);
-                        mc.renderEngine.bindTexture(Refraction.hovered_icons.get(i));
-                        drawScaledCustomSizeModalRect(left + 25, top + 20, 0, 0, 25, 25, 25, 25, 25, 25);
-                    } else {
-                        BASICS.drawButton(mc, left + 25, top + 20);
-                        mc.renderEngine.bindTexture(Refraction.icons.get(i));
-                        drawScaledCustomSizeModalRect(left + 25, top + 20, 0, 0, 25, 25, 25, 25, 25, 25);
-                    }
-                    break;
-                }
-                case 1: {
-                    boolean inside = mouseX >= ITEMS.xPosition && mouseX < ITEMS.xPosition + ITEMS.width && mouseY >= ITEMS.yPosition && mouseY < ITEMS.yPosition + ITEMS.height;
-                    if (inside) {
+            boolean inside = mouseX >= button.xPosition && mouseX < button.xPosition + button.width && mouseY >= button.yPosition && mouseY < button.yPosition + button.height;
+            int x = left + separation + (rowIndex * icon_size) + (rowIndex * separation);
+            int y = top + separation + (height * icon_size) + (height * separation);
 
-                        addTip("Read about what each item and block in this mod does.");
+            if (inside) {
+                setTip(tips.get(button));
+                mc.renderEngine.bindTexture(hoverTextures.get(button));
+            } else
+                mc.renderEngine.bindTexture(regularTextures.get(button));
 
-                        ITEMS.drawButton(mc, left + 55, top + 20);
-                        mc.renderEngine.bindTexture(Refraction.hovered_icons.get(i));
-                        drawScaledCustomSizeModalRect(left + 55, top + 20, 0, 0, 25, 25, 25, 25, 25, 25);
-                    } else {
-                        ITEMS.drawButton(mc, left + 55, top + 20);
-                        mc.renderEngine.bindTexture(Refraction.icons.get(i));
-                        drawScaledCustomSizeModalRect(left + 55, top + 20, 0, 0, 25, 25, 25, 25, 25, 25);
-                    }
-                    break;
-                }
-                case 2: {
-                    boolean inside = mouseX >= BEAM_MANIPULATION.xPosition && mouseX < BEAM_MANIPULATION.xPosition + BEAM_MANIPULATION.width && mouseY >= BEAM_MANIPULATION.yPosition && mouseY < BEAM_MANIPULATION.yPosition + BEAM_MANIPULATION.height;
-                    if (inside) {
+            button.drawButton(mc, x, y);
+            drawScaledCustomSizeModalRect(x, y, 0, 0, icon_size, icon_size, icon_size, icon_size, icon_size, icon_size);
 
-                        addTip("Learn how to accurately manipulate light beams.");
-
-                        BEAM_MANIPULATION.drawButton(mc, left + 90, top + 20);
-                        mc.renderEngine.bindTexture(Refraction.hovered_icons.get(i));
-                        drawScaledCustomSizeModalRect(left + 90, top + 20, 0, 0, 25, 25, 25, 25, 25, 25);
-                    } else {
-                        BEAM_MANIPULATION.drawButton(mc, left + 90, top + 20);
-                        mc.renderEngine.bindTexture(Refraction.icons.get(i));
-                        drawScaledCustomSizeModalRect(left + 90, top + 20, 0, 0, 25, 25, 25, 25, 25, 25);
-                    }
-                    break;
-                }
-                case 3: {
-                    boolean inside = mouseX >= ENERGY.xPosition && mouseX < ENERGY.xPosition + ENERGY.width && mouseY >= ENERGY.yPosition && mouseY < ENERGY.yPosition + ENERGY.height;
-                    if (inside) {
-
-                        addTip("Learn how to create, transport, manipulate, and store energy.");
-
-                        ENERGY.drawButton(mc, left + 25, top + 60);
-                        mc.renderEngine.bindTexture(Refraction.hovered_icons.get(i));
-                        drawScaledCustomSizeModalRect(left + 25, top + 60, 0, 0, 25, 25, 25, 25, 25, 25);
-                    } else {
-                        ENERGY.drawButton(mc, left + 25, top + 20);
-                        mc.renderEngine.bindTexture(Refraction.icons.get(i));
-                        drawScaledCustomSizeModalRect(left + 25, top + 60, 0, 0, 25, 25, 25, 25, 25, 25);
-                    }
-                    break;
-                }
+            if (rowIndex < 2) rowIndex++;
+            else {
+                rowIndex = 0;
+                height++;
             }
         }
-
 
         mc.renderEngine.bindTexture(BACKGROUND_TEXTURE);
         drawTexturedModalRect((width / 2) - 65, (float) (top - 20), 20, 182, 133, 14);
         fontRendererObj.setUnicodeFlag(false);
         fontRendererObj.drawString("Physics Book", (width / 2) - 30, (float) (top - 20) + 4, 0, false);
-        super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
     @Override
