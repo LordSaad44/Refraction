@@ -1,27 +1,25 @@
 package me.lordsaad.refraction.gui;
 
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Table;
 import me.lordsaad.refraction.Refraction;
 import me.lordsaad.refraction.Utils;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * Created by Saad on 4/19/2016.
  */
-public class PageBasics extends PageBase {
+public class PageBasics extends GuiTippable {
 
+    public static int currentPage = 0;
+    static Table<Integer, Item, String> recipes = HashBasedTable.create();
     private static HashMap<Integer, ArrayList<String>> pages;
-    private static int currentPage = 0;
     private GuiButton BACK, NEXT, TOINDEX;
 
     @Override
@@ -29,7 +27,8 @@ public class PageBasics extends PageBase {
         super.initGui();
         pages = new HashMap<>();
         initButtons();
-        splitTextToPages();
+        String TEXT_RESOURCE = "/assets/refraction/documentation/Basics.txt";
+        pages = Utils.splitTextToPages(pages, getClass().getResourceAsStream(TEXT_RESOURCE), this);
     }
 
     private void initButtons() {
@@ -37,61 +36,6 @@ public class PageBasics extends PageBase {
         buttonList.add(BACK = new GuiButtonCategory(0, left, top * 3, 9, 18));
         buttonList.add(NEXT = new GuiButtonCategory(1, left + 135, top * 3, 9, 18));
         buttonList.add(TOINDEX = new GuiButtonCategory(2, left + 60, top * 3 + 10, 18, 18));
-    }
-
-    private void splitTextToPages() {
-        List<String> txt = new ArrayList<>();
-        InputStream in = getClass().getResourceAsStream("/assets/refraction/documentation/Basics.txt");
-        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-        try {
-            while (true) {
-                String line = reader.readLine();
-                if (line == null) {
-                    break;
-                }
-                txt.add(line);
-            }
-            reader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        int pagenb = 0;
-        for (String line : txt) {
-
-            pages.putIfAbsent(pagenb, new ArrayList<>());
-            if (pages.get(pagenb).size() >= 18) {
-                pagenb++;
-                pages.putIfAbsent(pagenb, new ArrayList<>());
-            }
-
-            if (line.contains("/n")) pages.get(pagenb).add(" ");
-
-            else if (line.contains("/b")) pages.get(pagenb).add("-----------------------------");
-
-            else if (line.contains("/p")) {
-                pagenb++;
-                pages.putIfAbsent(pagenb, new ArrayList<>());
-
-            } else if (line.contains("/r:")) {
-                Item item = Item.getByNameOrId(line.substring(line.indexOf("/r:")));
-                if (item != null) {
-                    setRecipeTip(line.split(";")[1], new ItemStack(item));
-                }
-
-            } else {
-                ArrayList<String> pads = Utils.padString(line, 30);
-                for (String padded : pads) {
-                    if (pages.get(pagenb).size() < 18) {
-                        pages.get(pagenb).add(padded);
-                    } else {
-                        pagenb++;
-                        pages.putIfAbsent(pagenb, new ArrayList<>());
-                        pages.get(pagenb).add(padded);
-                    }
-                }
-            }
-        }
     }
 
     @Override
@@ -130,15 +74,25 @@ public class PageBasics extends PageBase {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         super.drawScreen(mouseX, mouseY, partialTicks);
-
         fontRendererObj.setUnicodeFlag(true);
 
         int height = 0;
-        if (pages.containsKey(currentPage))
+        if (pages.containsKey(currentPage)) {
             for (String line : pages.get(currentPage)) {
-                fontRendererObj.drawString(line, left + 17, top + 13 + (height * 8), 0, false);
-                height++;
+                if (line.contains("/r:")) {
+                    int requiredPage = Integer.parseInt(line.substring(line.indexOf("page=") + 5, line.indexOf(";")));
+                    String itemName = line.substring(line.indexOf("item=") + 5, line.indexOf(";;"));
+                    String comment = line.substring(line.indexOf("comment=") + 8);
+                    Item item = Item.getByNameOrId(itemName);
+                    if (!recipes.containsRow(requiredPage)) {
+                        recipes.put(requiredPage, item, comment);
+                    }
+                } else {
+                    fontRendererObj.drawString(line, left + 17, top + 13 + (height * 8), 0, false);
+                    height++;
+                }
             }
+        }
 
         GlStateManager.color(1F, 1F, 1F, 1F);
 

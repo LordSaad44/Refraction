@@ -4,13 +4,14 @@ This mod; if you didn't already know; is all about light manipulation in order t
 /b
 You can manipulate light through various means. However, in order to control such means, you of course need yet another tool in your tool-belt. No it's not a wrench, don't worry...
 /p
-/r:refraction:screwdriver;Oh god, not another one!
 *It's a screwdriver instead!*
 /b
 With the screwdriver, you will be able to very finely manipulate and/or adjust most of the blocks in this mod by right-clicking said blocks in a certain part of each block's face. Example: Right clicking the right part of a mirror's hit-box will tilt it slightly over to the right side.
 /p
-Speaking of [[mirrors]], that's the first item you'll want to craft next!
+Speaking of mirrors, that's the first item you'll want to craft next!
 /b
 The mirror is one of the most fundamental parts of this mod because it refracts light. Mirrors act like the "piping" system and can be placed on any side of a block. So it's highly adjustable (with the screwdriver).
 /n
 A mirror will not refract light if no beam is shining into it.
+/r:page=2;item=refraction:screwdriver;;comment=Oh god, not another one!
+/r:page=3;item=refraction:mirror;;comment=Bloody Mary, Bloody Mary, Bloody Mary.

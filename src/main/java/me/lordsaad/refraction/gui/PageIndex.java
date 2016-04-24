@@ -10,7 +10,7 @@ import java.util.HashMap;
 /**
  * Created by Saad on 4/13/2016.
  */
-public class PageIndex extends PageBase {
+public class PageIndex extends GuiTippable {
 
     private boolean didInit = false;
     private HashMap<GuiButton, String> tips = new HashMap<>();
@@ -20,6 +20,8 @@ public class PageIndex extends PageBase {
     @Override
     public void initGui() {
         super.initGui();
+        removeTextTips();
+        removeRecipeTips();
     }
 
     private void initIndexButtons() {
