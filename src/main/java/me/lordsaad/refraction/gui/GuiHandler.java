@@ -18,10 +18,10 @@ public class GuiHandler implements IGuiHandler {
     @Override
     public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
         if (ID == INDEX) {
-            return new BookIndex();
+            return new PageIndex();
         }
         if (ID == BASICS) {
-            return new BookBasics();
+            return new PageBasics();
         }
         return null;
     }

@@ -13,7 +13,7 @@ import java.util.LinkedHashMap;
 /**
  * Created by Saad on 4/19/2016.
  */
-public class BookBase extends GuiScreen {
+public class PageBase extends GuiScreen {
 
     static int guiWidth = 146, guiHeight = 180;
     static int left, top;

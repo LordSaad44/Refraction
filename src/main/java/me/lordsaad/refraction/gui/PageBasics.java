@@ -18,7 +18,7 @@ import java.util.List;
 /**
  * Created by Saad on 4/19/2016.
  */
-public class BookBasics extends BookBase {
+public class PageBasics extends PageBase {
 
     private static HashMap<Integer, ArrayList<String>> pages;
     private static int currentPage = 0;
@@ -58,15 +58,16 @@ public class BookBasics extends BookBase {
 
         int pagenb = 0;
         for (String line : txt) {
+
             pages.putIfAbsent(pagenb, new ArrayList<>());
+            if (pages.get(pagenb).size() >= 18) {
+                pagenb++;
+                pages.putIfAbsent(pagenb, new ArrayList<>());
+            }
 
-            if (pages.get(pagenb).size() >= 15) pagenb++;
+            if (line.contains("/n")) pages.get(pagenb).add(" ");
 
-            if (line.contains("/n"))
-                pages.get(pagenb).add(" ");
-
-            else if (line.contains("/b"))
-                pages.get(pagenb).add("-----------------------------");
+            else if (line.contains("/b")) pages.get(pagenb).add("-----------------------------");
 
             else if (line.contains("/p")) {
                 pagenb++;
@@ -77,10 +78,11 @@ public class BookBasics extends BookBase {
                 if (item != null) {
                     setRecipeTip(line.split(";")[1], new ItemStack(item));
                 }
+
             } else {
                 ArrayList<String> pads = Utils.padString(line, 30);
                 for (String padded : pads) {
-                    if (pads.size() < 15) {
+                    if (pages.get(pagenb).size() < 18) {
                         pages.get(pagenb).add(padded);
                     } else {
                         pagenb++;

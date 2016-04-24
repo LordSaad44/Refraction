@@ -3,7 +3,7 @@ package me.lordsaad.refraction.gui;
 /**
  * Created by Saad on 4/15/2016.
  */
-public class GuiBasics extends BookIndex {
+public class GuiBasics extends PageIndex {
 
     @Override
     public void initGui() {

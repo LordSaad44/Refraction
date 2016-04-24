@@ -10,7 +10,7 @@ import java.util.HashMap;
 /**
  * Created by Saad on 4/13/2016.
  */
-public class BookIndex extends BookBase {
+public class PageIndex extends PageBase {
 
     private boolean didInit = false;
     private HashMap<GuiButton, String> tips = new HashMap<>();
