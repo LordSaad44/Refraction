@@ -5,25 +5,21 @@ import me.lordsaad.refraction.Refraction;
 import me.lordsaad.refraction.Utils;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.init.Blocks;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
-import static me.lordsaad.refraction.gui.PageBasics.currentPage;
 import static me.lordsaad.refraction.gui.PageBasics.recipes;
 
 /**
  * Created by Saad on 4/24/2016.
  */
 public class GuiTippable extends PageBase {
+    static String currentTextTip = "null", lastTextTip = "null", nextTextTip = "null";
+    static ItemStack currentRecipeTip = new ItemStack(Blocks.barrier), lastRecipeTip = new ItemStack(Blocks.barrier), nextRecipeTip = new ItemStack(Blocks.barrier);
     private static ResourceLocation SLIDERS = new ResourceLocation(Refraction.MODID, "textures/gui/sliders.png");
-
-    private static String currentTextTip = "null", lastTextTip = "null", nextTextTip = "null";
-    private static ItemStack currentRecipeTip = new ItemStack(Blocks.barrier), lastRecipeTip = new ItemStack(Blocks.barrier), nextRecipeTip = new ItemStack(Blocks.barrier);
-
     private static LinkedHashMap<String, Double> textTipLocations = new LinkedHashMap<>();
     private static LinkedHashMap<ItemStack, Double> recipeTipLocations = new LinkedHashMap<>();
 
@@ -50,10 +46,10 @@ public class GuiTippable extends PageBase {
         }
     }
 
-    private void setRecipeTip(String comment, ItemStack stack) {
+    void setRecipeTip(String comment, ItemStack stack) {
         if (!recipeTipLocations.containsKey(stack)) {
             recipeTipLocations.put(stack, 0d);
-            currentRecipeTip = stack;
+            nextRecipeTip = stack;
             setTextTip(comment);
         }
     }
@@ -106,13 +102,15 @@ public class GuiTippable extends PageBase {
     public void renderRecipeTips() {
         if (!recipeTipLocations.isEmpty()) {
             for (ItemStack tip : recipeTipLocations.keySet()) {
-
                 double tipLoc = recipeTipLocations.get(tip);
                 double distance = 145 - Math.abs(tipLoc);
 
                 if (distance < 0.1) {
-                    if (nextRecipeTip.equals(tip)) currentRecipeTip = tip;
-                    if (!currentRecipeTip.equals(tip)) lastRecipeTip = tip;
+                    if (nextRecipeTip.equals(tip) && !lastRecipeTip.equals(tip) && !currentRecipeTip.equals(tip))
+                        currentRecipeTip = tip;
+
+                    if (!currentRecipeTip.equals(tip) && !lastRecipeTip.equals(tip) && nextRecipeTip.equals(tip))
+                        lastRecipeTip = tip;
 
                     if (!nextRecipeTip.equals(tip) && !currentRecipeTip.equals(tip) && lastRecipeTip.equals(tip)) {
                         removeRecipeTips.add(tip);
@@ -127,20 +125,53 @@ public class GuiTippable extends PageBase {
                 mc.renderEngine.bindTexture(SLIDERS);
                 if (recipeTipLocations.containsKey(tip)) {
                     drawTexturedModalRect((float) (left + tipLoc / 1.13), (float) (height / 2.5), 0, 37, 133, 68);
-                    itemRender.renderItemAndEffectIntoGUI(tip, (int) (left + tipLoc / 1.13) + 100,
-                            (int) (height / 2.5) + 26);
-                    int x = 9, y = 9;
-                    if (CraftingRecipes.recipes.containsKey(tip)) {
-                        for (ItemStack stack : CraftingRecipes.recipes.get(tip)) {
-                            if (stack != null) {
-                                itemRender.renderItemAndEffectIntoGUI(stack, (int) (left + tipLoc / 1.13) + x,
-                                        (int) (height / 2.5) + y);
+                    itemRender.renderItemAndEffectIntoGUI(tip, (int) (left + tipLoc / 1.13) + 100, (int) (height / 2.5) + 26);
+
+                    int x = 0, y = 0;
+                    if (CraftingRecipes.recipes.containsKey(tip.getDisplayName())) {
+                        for (int craftingPosition : CraftingRecipes.recipes.get(tip.getDisplayName()).keySet()) {
+                            ItemStack stack = CraftingRecipes.recipes.get(tip.getDisplayName()).get(craftingPosition);
+                            switch (craftingPosition) {
+                                case 0:
+                                    x = 0;
+                                    y = 0;
+                                    break;
+                                case 1:
+                                    x = 1;
+                                    y = 0;
+                                    break;
+                                case 2:
+                                    x = 2;
+                                    y = 0;
+                                    break;
+                                case 3:
+                                    x = 0;
+                                    y = 1;
+                                    break;
+                                case 4:
+                                    x = 1;
+                                    y = 1;
+                                    break;
+                                case 5:
+                                    x = 2;
+                                    y = 1;
+                                    break;
+                                case 6:
+                                    x = 0;
+                                    y = 2;
+                                    break;
+                                case 7:
+                                    x = 1;
+                                    y = 2;
+                                    break;
+                                case 8:
+                                    x = 2;
+                                    y = 2;
+                                    break;
                             }
-                            if (x >= 27) {
-                                x = 9;
-                                y += 18;
-                            } else
-                                x += 18;
+
+                            if (stack != null)
+                                itemRender.renderItemAndEffectIntoGUI(stack, (int) (left + tipLoc / 1.13) + 9 + x * 18, (int) (height / 2.5) + 8 + y * 18);
                         }
                     }
                 }
@@ -169,15 +200,5 @@ public class GuiTippable extends PageBase {
         super.drawScreen(mouseX, mouseY, partialTicks);
         renderTextTips();
         renderRecipeTips();
-
-        if (recipes.containsRow(currentPage)) {
-            for (Item item : recipes.columnKeySet()) {
-                if (!nextRecipeTip.getDisplayName().equals(new ItemStack(item).getDisplayName()) &&
-                        !currentRecipeTip.getDisplayName().equals(new ItemStack(item).getDisplayName()))
-                    if (recipes.contains(currentPage, item))
-                        setRecipeTip(recipes.get(currentPage, item), new ItemStack(item));
-            }
-        }
     }
-
 }

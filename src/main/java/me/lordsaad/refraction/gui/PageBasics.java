@@ -7,6 +7,7 @@ import me.lordsaad.refraction.Utils;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -18,8 +19,8 @@ import java.util.HashMap;
 public class PageBasics extends GuiTippable {
 
     public static int currentPage = 0;
+    public static HashMap<Integer, ArrayList<String>> pages;
     static Table<Integer, Item, String> recipes = HashBasedTable.create();
-    private static HashMap<Integer, ArrayList<String>> pages;
     private GuiButton BACK, NEXT, TOINDEX;
 
     @Override
@@ -92,6 +93,11 @@ public class PageBasics extends GuiTippable {
                     height++;
                 }
             }
+        }
+
+        if (recipes.containsRow(currentPage)) {
+            recipes.columnKeySet().stream().filter(item -> !nextRecipeTip.getDisplayName().equals(new ItemStack(item).getDisplayName()) &&
+                    !currentRecipeTip.getDisplayName().equals(new ItemStack(item).getDisplayName())).filter(item -> recipes.contains(currentPage, item)).forEach(item -> setRecipeTip(recipes.get(currentPage, item), new ItemStack(item)));
         }
 
         GlStateManager.color(1F, 1F, 1F, 1F);

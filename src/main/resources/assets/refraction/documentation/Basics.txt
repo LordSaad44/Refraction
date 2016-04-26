@@ -10,8 +10,11 @@ With the screwdriver, you will be able to very finely manipulate and/or adjust m
 /p
 Speaking of mirrors, that's the first item you'll want to craft next!
 /b
-The mirror is one of the most fundamental parts of this mod because it refracts light. Mirrors act like the "piping" system and can be placed on any side of a block. So it's highly adjustable (with the screwdriver).
+The mirror is one of the most fundamental parts of this mod because it reflects light. Mirrors act like the "piping" system and can be placed on any side of a block. So it's highly adjustable (with the screwdriver).
 /n
-A mirror will not refract light if no beam is shining into it.
+A mirror will not reflect light if no beam is shining into it, so you'll need a...
+/p
+*magnifier*
 /r:page=2;item=refraction:screwdriver;;comment=Oh god, not another one!
 /r:page=3;item=refraction:mirror;;comment=Bloody Mary, Bloody Mary, Bloody Mary.
+/r:page=4;item=refraction:magnifier;;comment=Detective is on the case.
