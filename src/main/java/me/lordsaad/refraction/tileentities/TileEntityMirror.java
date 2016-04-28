@@ -5,6 +5,7 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.Vec3d;
 
 /**
  * Created by Saad on 3/24/2016.
@@ -12,6 +13,7 @@ import net.minecraft.tileentity.TileEntity;
 public class TileEntityMirror extends TileEntity {
 
     private int yaw = 0, pitch = 0;
+    private Vec3d vec;
 
     public int getPitch() {
         return pitch;

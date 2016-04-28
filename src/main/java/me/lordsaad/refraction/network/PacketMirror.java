@@ -40,7 +40,6 @@ public class PacketMirror implements IMessage {
         byteBuf.writeInt(pos.getX());
         byteBuf.writeInt(pos.getY());
         byteBuf.writeInt(pos.getZ());
-
     }
 
     public static class Handler implements IMessageHandler<PacketMirror, IMessage> {

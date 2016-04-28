@@ -1,6 +1,7 @@
 package me.lordsaad.refraction.tesrs;
 
 import me.lordsaad.refraction.Refraction;
+import me.lordsaad.refraction.Utils;
 import me.lordsaad.refraction.blocks.BlockMirror;
 import me.lordsaad.refraction.tileentities.TileEntityMirror;
 import net.minecraft.client.Minecraft;
@@ -13,10 +14,16 @@ import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import org.lwjgl.opengl.GL11;
+
+import java.awt.*;
 
 /**
  * Created by Saad on 4/4/2016.
@@ -56,6 +63,21 @@ public class TESRMirror extends TileEntitySpecialRenderer<TileEntityMirror> {
     private void renderpad(TileEntityMirror te) {
         GlStateManager.pushMatrix();
 
+        // RAYTRACE //
+        Vec3d centervec = new Vec3d(te.getPos().getX() + 0.5, te.getPos().getY() + 0.8, te.getPos().getZ() + 0.5);
+
+        Vec3d lookvec = Utils.getVectorForRotation3d(te.getPitch(), te.getYaw()).normalize();
+        Vec3d startvec = centervec.add(lookvec);
+
+        Vec3d end = startvec.add(new Vec3d(lookvec.xCoord * 100, lookvec.yCoord * 100, lookvec.zCoord * 100));
+        RayTraceResult result = te.getWorld().rayTraceBlocks(startvec, end, false, false, true);
+
+        Minecraft.getMinecraft().thePlayer.addChatComponentMessage(new TextComponentString(TextFormatting.YELLOW + te.getWorld().getBlockState(result.getBlockPos()).getBlock().getLocalizedName()));
+
+        Utils.drawConnection(Minecraft.getMinecraft().thePlayer.posX, Minecraft.getMinecraft().thePlayer.posY, Minecraft.getMinecraft().thePlayer.posZ, te.getPos(), result.getBlockPos(), Color.WHITE);
+        // RAYTRACE //
+
+        // ORIENT PAD //
         EnumFacing facing = te.getWorld().getBlockState(te.getPos()).getValue(BlockMirror.FACING);
         if (facing == EnumFacing.NORTH) {
             GlStateManager.translate(0.5, 0.5, 0.4);

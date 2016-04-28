@@ -1,10 +1,17 @@
 package me.lordsaad.refraction;
 
 import me.lordsaad.refraction.gui.PageBase;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import org.apache.commons.lang3.text.WordUtils;
+import org.lwjgl.opengl.GL11;
 
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -82,4 +89,38 @@ public class Utils {
         }
         return pages;
     }
+
+    public static void drawConnection(double playerX, double playerY, double playerZ, BlockPos pos1, BlockPos pos2, Color color) {
+        GlStateManager.pushMatrix();
+        GlStateManager.pushAttrib();
+
+        double x = pos1.getX() - playerX;
+        double y = pos1.getY() - playerY;
+        double z = pos1.getZ() - playerZ;
+
+        GL11.glLineWidth(3);
+
+        GlStateManager.disableTexture2D();
+
+        GlStateManager.color(color.getRed(), color.getGreen(), color.getBlue(), 0.7f);
+
+        VertexBuffer vb = Tessellator.getInstance().getBuffer();
+
+        vb.setTranslation(x, y, z);
+
+        vb.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION);
+
+        vb.pos(pos2.getX() - pos1.getX(), pos2.getY() - pos1.getY(), pos2.getZ() - pos1.getZ()).endVertex();
+        vb.pos(0, 0, 0).endVertex();
+
+        Tessellator.getInstance().draw();
+
+        vb.setTranslation(0, 0, 0);
+
+        GlStateManager.enableTexture2D();
+
+        GlStateManager.popAttrib();
+        GlStateManager.popMatrix();
+    }
+
 }
