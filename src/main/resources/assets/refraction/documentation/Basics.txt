@@ -14,7 +14,10 @@ The mirror is one of the most fundamental parts of this mod because it reflects 
 /n
 A mirror will not reflect light if no beam is shining into it, so you'll need a...
 /p
-*magnifier
+*magnifier!
+/b
+The magnifier will converge sun-light photons into a focused beam that can then be manipulated.
+The magnifier is also adjustable with the screwdriver.
 /r:2;refraction:screwdriver;Oh god, not another one!
 /r:3;refraction:mirror;Bloody Mary, Bloody Mary, Bloody Mary.
 /r:4;refraction:magnifier;Detective is on the case.

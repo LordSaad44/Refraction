@@ -20,7 +20,7 @@ public class PageIndex extends Tippable {
     @Override
     public void initGui() {
         super.initGui();
-        clear();
+        clearTips();
     }
 
     private void initIndexButtons() {
@@ -41,8 +41,7 @@ public class PageIndex extends Tippable {
         didInit = true;
     }
 
-    public void addButton(GuiButtonCategory button, ResourceLocation regularTexture, ResourceLocation
-            hoverTexture, String tip) {
+    public void addButton(GuiButtonCategory button, ResourceLocation regularTexture, ResourceLocation hoverTexture, String tip) {
         buttonList.add(button);
         tips.put(button, tip);
         regularTextures.put(button, regularTexture);
@@ -53,7 +52,7 @@ public class PageIndex extends Tippable {
     protected void actionPerformed(GuiButton button) throws IOException {
         if (button.id == 0) {
             mc.thePlayer.openGui(Refraction.instance, GuiHandler.BASICS, mc.theWorld, (int) mc.thePlayer.posX, (int) mc.thePlayer.posY, (int) mc.thePlayer.posZ);
-            Tippable.clear();
+            removeTip(getActiveTip());
         }
     }
 
@@ -91,7 +90,7 @@ public class PageIndex extends Tippable {
         }
 
         mc.renderEngine.bindTexture(BACKGROUND_TEXTURE);
-        drawTexturedModalRect((width / 2) - 65, (float) (top - 20), 20, 182, 133, 14);
+        drawTexturedModalRect((width / 2) - 66, (float) (top - 20), 19, 182, 133, 14);
         fontRendererObj.setUnicodeFlag(false);
         fontRendererObj.setBidiFlag(false);
         fontRendererObj.drawString("Physics Book", (width / 2) - 30, (float) (top - 20) + 4, 0, false);

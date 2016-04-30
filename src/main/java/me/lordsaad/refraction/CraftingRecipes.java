@@ -39,5 +39,21 @@ public class CraftingRecipes {
         screwdriverRecipe.put(4, new ItemStack(Items.iron_ingot));
         screwdriverRecipe.put(6, new ItemStack(Items.stick));
         recipes.put(new ItemStack(ModItems.screwdriver).getDisplayName(), screwdriverRecipe);
+
+        CraftingManager.getInstance().addRecipe(new ItemStack(ModBlocks.magnifier),
+                "WWW", "WGW", "WWW",
+                'W', new ItemStack(Blocks.planks),
+                'G', new ItemStack(Blocks.glass));
+        HashMap<Integer, ItemStack> magnifierRecipe = new HashMap<>();
+        magnifierRecipe.put(0, new ItemStack(Blocks.planks));
+        magnifierRecipe.put(1, new ItemStack(Blocks.planks));
+        magnifierRecipe.put(2, new ItemStack(Blocks.planks));
+        magnifierRecipe.put(3, new ItemStack(Blocks.planks));
+        magnifierRecipe.put(4, new ItemStack(Blocks.glass));
+        magnifierRecipe.put(5, new ItemStack(Blocks.planks));
+        magnifierRecipe.put(6, new ItemStack(Blocks.planks));
+        magnifierRecipe.put(7, new ItemStack(Blocks.planks));
+        magnifierRecipe.put(8, new ItemStack(Blocks.planks));
+        recipes.put(new ItemStack(ModBlocks.magnifier).getDisplayName(), magnifierRecipe);
     }
 }

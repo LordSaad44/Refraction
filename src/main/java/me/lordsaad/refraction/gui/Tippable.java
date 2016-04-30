@@ -53,11 +53,9 @@ public class Tippable extends PageBase {
         return 0;
     }
 
-    public static void clear() {
+    public static void clearTips() {
+        tipX.keySet().forEach(Tippable::removeTip);
         IDs = -1;
-        tipText.clear();
-        tipX.clear();
-        tipRecipe.clear();
     }
 
     public static int getActiveTip() {
