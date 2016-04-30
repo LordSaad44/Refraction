@@ -16,8 +16,6 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
@@ -66,15 +64,13 @@ public class TESRMirror extends TileEntitySpecialRenderer<TileEntityMirror> {
         // RAYTRACE //
         Vec3d centervec = new Vec3d(te.getPos().getX() + 0.5, te.getPos().getY() + 0.8, te.getPos().getZ() + 0.5);
 
-        Vec3d lookvec = Utils.getVectorForRotation3d(te.getPitch(), te.getYaw()).normalize();
+        Vec3d lookvec = Utils.getVectorForRotation3d(te.getEffectivePitch() - 90, te.getYaw()).normalize();
         Vec3d startvec = centervec.add(lookvec);
 
         Vec3d end = startvec.add(new Vec3d(lookvec.xCoord * 100, lookvec.yCoord * 100, lookvec.zCoord * 100));
-        RayTraceResult result = te.getWorld().rayTraceBlocks(startvec, end, false, false, true);
+        RayTraceResult result = te.getWorld().rayTraceBlocks(startvec, end, true, false, true);
 
-        Minecraft.getMinecraft().thePlayer.addChatComponentMessage(new TextComponentString(TextFormatting.YELLOW + te.getWorld().getBlockState(result.getBlockPos()).getBlock().getLocalizedName()));
-
-        Utils.drawConnection(Minecraft.getMinecraft().thePlayer.posX, Minecraft.getMinecraft().thePlayer.posY, Minecraft.getMinecraft().thePlayer.posZ, te.getPos(), result.getBlockPos(), Color.WHITE);
+        Utils.drawConnection(te.getPos(), result.getBlockPos(), Color.WHITE);
         // RAYTRACE //
 
         // ORIENT PAD //

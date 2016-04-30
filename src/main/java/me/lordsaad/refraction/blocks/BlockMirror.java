@@ -77,6 +77,7 @@ public class BlockMirror extends BlockDirectional implements ITileEntityProvider
                             if (side == EnumFacing.SOUTH) {
                                 if (top) mirror.subtractPitch(1);
                                 else if (bottom) mirror.addPitch(1);
+
                             } else {
                                 if (top) mirror.addPitch(1);
                                 else if (bottom) mirror.subtractPitch(1);
@@ -98,8 +99,18 @@ public class BlockMirror extends BlockDirectional implements ITileEntityProvider
                             if (left) mirror.addPitch(1);
                             else if (right) mirror.subtractPitch(1);
                         }
+                        switch (mirror.getEffectiveHorizontalDirection()) {
+                            case NORTH: {
+                                if (top) mirror.setEffectivePitch(mirror.getEffectivePitch() + 1);
+                                else mirror.setEffectivePitch(mirror.getEffectivePitch() - 1);
 
-                        playerIn.addChatComponentMessage(new TextComponentString(TextFormatting.YELLOW + "pitch: " + mirror.getPitch() + " -- yaw:" + mirror.getYaw()));
+                                if (left) mirror.setEffectiveYaw(mirror.getEffectiveYaw() - 1);
+                                else mirror.setEffectiveYaw(mirror.getEffectiveYaw() + 1);
+                                break;
+                            }
+                        }
+
+                        playerIn.addChatComponentMessage(new TextComponentString(TextFormatting.YELLOW + "pitch: " + mirror.getPitch() + " -- yaw:" + mirror.getYaw() + " -- real pitch:" + mirror.getEffectivePitch() + " -- real yaw:" + mirror.getEffectiveYaw() + " -- " + mirror.getEffectiveHorizontalDirection()));
 
                         // SEND PACKETS //
                         PacketMirror packet = new PacketMirror(mirror.getYaw(), mirror.getPitch(), pos);
@@ -178,6 +189,9 @@ public class BlockMirror extends BlockDirectional implements ITileEntityProvider
     public int getMetaFromState(IBlockState state) {
         int i;
         switch (state.getValue(FACING).ordinal()) {
+            case 0:
+                i = 0;
+                break;
             case 1:
                 i = 1;
                 break;
@@ -191,11 +205,12 @@ public class BlockMirror extends BlockDirectional implements ITileEntityProvider
                 i = 4;
                 break;
             case 5:
-            default:
                 i = 5;
                 break;
-            case 6:
+            default:
                 i = 0;
+                break;
+
         }
         return i;
     }

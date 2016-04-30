@@ -23,6 +23,8 @@ public class PageBase extends GuiScreen {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         super.drawScreen(mouseX, mouseY, partialTicks);
+        fontRendererObj.setUnicodeFlag(true);
+        fontRendererObj.setBidiFlag(true);
     }
 
     @Override

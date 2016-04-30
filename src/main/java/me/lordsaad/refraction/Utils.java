@@ -1,5 +1,6 @@
 package me.lordsaad.refraction;
 
+import com.mojang.realmsclient.gui.ChatFormatting;
 import me.lordsaad.refraction.gui.PageBase;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
@@ -35,7 +36,8 @@ public class Utils {
 
     public static ArrayList<String> padString(String string, int stringSize) {
         ArrayList<String> lines = new ArrayList<>();
-        for (String line : WordUtils.wrap(string, stringSize).split("\n")) lines.add(line.trim());
+        if (string != null)
+            for (String line : WordUtils.wrap(string, stringSize).split("\n")) lines.add(line.trim());
         return lines;
     }
 
@@ -75,14 +77,28 @@ public class Utils {
             } else if (line.contains("/r")) {
                 pages.get(pagenb).add(line);
             } else {
-                ArrayList<String> pads = Utils.padString(line, 30);
-                for (String padded : pads) {
-                    if (pages.get(pagenb).size() < 18) {
-                        pages.get(pagenb).add(padded);
-                    } else {
-                        pagenb++;
-                        pages.putIfAbsent(pagenb, new ArrayList<>());
-                        pages.get(pagenb).add(padded);
+                if (line.startsWith("*")) {
+                    line = line.substring(line.indexOf("*") + 1);
+                    ArrayList<String> pads = Utils.padString(line, 30);
+                    for (String padded : pads) {
+                        if (pages.get(pagenb).size() < 18) {
+                            pages.get(pagenb).add(ChatFormatting.ITALIC + padded);
+                        } else {
+                            pagenb++;
+                            pages.putIfAbsent(pagenb, new ArrayList<>());
+                            pages.get(pagenb).add(ChatFormatting.ITALIC + padded);
+                        }
+                    }
+                } else {
+                    ArrayList<String> pads = Utils.padString(line, 30);
+                    for (String padded : pads) {
+                        if (pages.get(pagenb).size() < 18) {
+                            pages.get(pagenb).add(padded);
+                        } else {
+                            pagenb++;
+                            pages.putIfAbsent(pagenb, new ArrayList<>());
+                            pages.get(pagenb).add(padded);
+                        }
                     }
                 }
             }
@@ -90,23 +106,18 @@ public class Utils {
         return pages;
     }
 
-    public static void drawConnection(double playerX, double playerY, double playerZ, BlockPos pos1, BlockPos pos2, Color color) {
+    public static void drawConnection(BlockPos pos1, BlockPos pos2, Color color) {
         GlStateManager.pushMatrix();
-        GlStateManager.pushAttrib();
 
-        double x = pos1.getX() - playerX;
-        double y = pos1.getY() - playerY;
-        double z = pos1.getZ() - playerZ;
-
-        GL11.glLineWidth(3);
+        GL11.glLineWidth(1);
 
         GlStateManager.disableTexture2D();
 
         GlStateManager.color(color.getRed(), color.getGreen(), color.getBlue(), 0.7f);
 
-        VertexBuffer vb = Tessellator.getInstance().getBuffer();
+        GlStateManager.translate(0.5, 0.7, 0.5);
 
-        vb.setTranslation(x, y, z);
+        VertexBuffer vb = Tessellator.getInstance().getBuffer();
 
         vb.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION);
 
@@ -115,11 +126,8 @@ public class Utils {
 
         Tessellator.getInstance().draw();
 
-        vb.setTranslation(0, 0, 0);
-
         GlStateManager.enableTexture2D();
 
-        GlStateManager.popAttrib();
         GlStateManager.popMatrix();
     }
 

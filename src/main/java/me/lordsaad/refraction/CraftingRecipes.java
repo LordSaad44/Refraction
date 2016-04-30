@@ -30,7 +30,6 @@ public class CraftingRecipes {
         mirrorRecipe.put(7, new ItemStack(Items.stick));
         recipes.put(new ItemStack(ModBlocks.mirror).getDisplayName(), mirrorRecipe);
 
-
         CraftingManager.getInstance().addRecipe(new ItemStack(ModItems.screwdriver),
                 "  I", " I ", "S  ",
                 'I', new ItemStack(Items.iron_ingot),

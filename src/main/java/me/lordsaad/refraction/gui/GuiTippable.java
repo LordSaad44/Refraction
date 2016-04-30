@@ -11,7 +11,7 @@ import net.minecraft.util.ResourceLocation;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
-import static me.lordsaad.refraction.gui.PageBasics.recipes;
+import static me.lordsaad.refraction.gui.PageBasics.BADrecipes;
 
 /**
  * Created by Saad on 4/24/2016.
@@ -185,7 +185,7 @@ public class GuiTippable extends PageBase {
                     nextRecipeTip = new ItemStack(Blocks.barrier);
                 if (lastRecipeTip.getDisplayName().equals(rem.getDisplayName()))
                     lastRecipeTip = new ItemStack(Blocks.barrier);
-                if (recipes.contains(PageBasics.currentPage, rem)) recipes.remove(PageBasics.currentPage, rem);
+                if (BADrecipes.contains(PageBasics.currentPage, rem)) BADrecipes.remove(PageBasics.currentPage, rem);
             }
             removeRecipeTips.clear();
         }

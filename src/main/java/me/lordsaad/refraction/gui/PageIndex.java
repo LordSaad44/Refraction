@@ -10,7 +10,7 @@ import java.util.HashMap;
 /**
  * Created by Saad on 4/13/2016.
  */
-public class PageIndex extends GuiTippable {
+public class PageIndex extends Tippable {
 
     private boolean didInit = false;
     private HashMap<GuiButton, String> tips = new HashMap<>();
@@ -20,8 +20,7 @@ public class PageIndex extends GuiTippable {
     @Override
     public void initGui() {
         super.initGui();
-        removeTextTips();
-        removeRecipeTips();
+        clear();
     }
 
     private void initIndexButtons() {
@@ -53,8 +52,8 @@ public class PageIndex extends GuiTippable {
     @Override
     protected void actionPerformed(GuiButton button) throws IOException {
         if (button.id == 0) {
-            mc.thePlayer.openGui(Refraction.instance, GuiHandler.BASICS, mc.theWorld, (int) mc.thePlayer.posX, (int)
-                    mc.thePlayer.posY, (int) mc.thePlayer.posZ);
+            mc.thePlayer.openGui(Refraction.instance, GuiHandler.BASICS, mc.theWorld, (int) mc.thePlayer.posX, (int) mc.thePlayer.posY, (int) mc.thePlayer.posZ);
+            Tippable.clear();
         }
     }
 
@@ -77,7 +76,7 @@ public class PageIndex extends GuiTippable {
             button.height = iconSize;
 
             if (inside) {
-                setTextTip(tips.get(button));
+                setTip(tips.get(button));
                 mc.renderEngine.bindTexture(hoverTextures.get(button));
             } else
                 mc.renderEngine.bindTexture(regularTextures.get(button));
@@ -94,6 +93,7 @@ public class PageIndex extends GuiTippable {
         mc.renderEngine.bindTexture(BACKGROUND_TEXTURE);
         drawTexturedModalRect((width / 2) - 65, (float) (top - 20), 20, 182, 133, 14);
         fontRendererObj.setUnicodeFlag(false);
+        fontRendererObj.setBidiFlag(false);
         fontRendererObj.drawString("Physics Book", (width / 2) - 30, (float) (top - 20) + 4, 0, false);
     }
 

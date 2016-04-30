@@ -1,10 +1,10 @@
 *In a world where physics exists, students have to deal with scholastic lessons about light reflection and refraction. Well, let me tell you that you will NOT need to know any of that crap! In fact, not even the developer of this mod fully understands them!
 /n
-This mod; if you didn't already know; is all about light manipulation in order to accomplish many marvelous things such as faster smelting through hot lasers, boosted sunlight beams to grow crops faster via magnifiers, or even (for the strong hearted) manage inventory systems and delve into magical rituals to accomplish so much that physics can't explain. You know... Because physics is magic when you're in grade 10 and up...*
+*This mod; if you didn't already know; is all about light manipulation in order to accomplish many marvelous things such as faster smelting through hot lasers, boosted sunlight beams to grow crops faster via magnifiers, or even (for the strong hearted) manage inventory systems and delve into magical rituals to accomplish so much that physics can't explain. You know... Because physics is magic when you're in grade 10 and up...
 /b
 You can manipulate light through various means. However, in order to control such means, you of course need yet another tool in your tool-belt. No it's not a wrench, don't worry...
 /p
-*It's a screwdriver instead!*
+*It's a screwdriver instead!
 /b
 With the screwdriver, you will be able to very finely manipulate and/or adjust most of the blocks in this mod by right-clicking said blocks in a certain part of each block's face. Example: Right clicking the right part of a mirror's hit-box will tilt it slightly over to the right side.
 /p
@@ -14,7 +14,7 @@ The mirror is one of the most fundamental parts of this mod because it reflects 
 /n
 A mirror will not reflect light if no beam is shining into it, so you'll need a...
 /p
-*magnifier*
-/r:page=2;item=refraction:screwdriver;;comment=Oh god, not another one!
-/r:page=3;item=refraction:mirror;;comment=Bloody Mary, Bloody Mary, Bloody Mary.
-/r:page=4;item=refraction:magnifier;;comment=Detective is on the case.
+*magnifier
+/r:2;refraction:screwdriver;Oh god, not another one!
+/r:3;refraction:mirror;Bloody Mary, Bloody Mary, Bloody Mary.
+/r:4;refraction:magnifier;Detective is on the case.

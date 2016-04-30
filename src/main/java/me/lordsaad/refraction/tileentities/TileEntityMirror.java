@@ -5,7 +5,9 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.EnumFacing;
+
+import static net.minecraft.util.EnumFacing.*;
 
 /**
  * Created by Saad on 3/24/2016.
@@ -13,7 +15,57 @@ import net.minecraft.util.math.Vec3d;
 public class TileEntityMirror extends TileEntity {
 
     private int yaw = 0, pitch = 0;
-    private Vec3d vec;
+    private int effectiveYaw = 0, effectivePitch = 0;
+
+    public EnumFacing getEffectiveHorizontalDirection() {
+        if (yaw < 0) return EAST;
+        else if (yaw > 0) return WEST;
+        else if (pitch < 0) return NORTH;
+        else if (pitch > 0) return SOUTH;
+        else return UP;
+    }
+
+    // The effective pitch is the correct pitch that light beams are drawn from
+    public int getEffectivePitch() {
+        return effectivePitch;
+    }
+
+    public void setEffectivePitch(int effectivePitch) {
+        this.effectivePitch = effectivePitch;
+    }
+
+    public void addEffectivePitch(int amount) {
+        if (effectivePitch == 90) effectivePitch = -89;
+        if (effectivePitch == -90) effectivePitch = 89;
+        if (effectivePitch < 90 && effectivePitch > -90) effectivePitch += amount;
+    }
+
+    public void subtractEffectivePitch(int amount) {
+        if (effectivePitch == 90) effectivePitch = -89;
+        if (effectivePitch == -90) effectivePitch = 89;
+        if (effectivePitch < 90 && effectivePitch > -90) effectivePitch -= amount;
+    }
+
+    // The effective yaw is the correct yaw that light beams are drawn from
+    public int getEffectiveYaw() {
+        return effectiveYaw;
+    }
+
+    public void setEffectiveYaw(int effectiveYaw) {
+        this.effectiveYaw = effectiveYaw;
+    }
+
+    public void addEffectiveYaw(int amount) {
+        if (effectiveYaw == 180) effectiveYaw = -179;
+        if (effectiveYaw == -180) effectiveYaw = 179;
+        if (effectiveYaw < 180 && effectiveYaw > -180) effectiveYaw += amount;
+    }
+
+    public void subtractEffectiveYaw(int amount) {
+        if (effectiveYaw == 180) effectiveYaw = -179;
+        if (effectiveYaw == -180) effectiveYaw = 179;
+        if (effectiveYaw < 180 && effectiveYaw > -180) effectiveYaw -= amount;
+    }
 
     public int getPitch() {
         return pitch;
