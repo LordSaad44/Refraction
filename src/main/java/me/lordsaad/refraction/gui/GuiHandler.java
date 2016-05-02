@@ -1,5 +1,7 @@
 package me.lordsaad.refraction.gui;
 
+import me.lordsaad.refraction.gui.indexes.IndexBasics;
+import me.lordsaad.refraction.gui.pages.GettingStarted;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.IGuiHandler;
@@ -10,6 +12,9 @@ import net.minecraftforge.fml.common.network.IGuiHandler;
 public class GuiHandler implements IGuiHandler {
     public static int INDEX = 0, BASICS = 1;
 
+    // BASICS INDEX
+    public static int basics_getting_started = 2;
+
     @Override
     public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
         return null;
@@ -17,12 +22,9 @@ public class GuiHandler implements IGuiHandler {
 
     @Override
     public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
-        if (ID == INDEX) {
-            return new PageIndex();
-        }
-        if (ID == BASICS) {
-            return new PageBasics();
-        }
+        if (ID == INDEX) return new MainIndex();
+        if (ID == BASICS) return new IndexBasics();
+        if (ID == basics_getting_started) return new GettingStarted();
         return null;
     }
 }

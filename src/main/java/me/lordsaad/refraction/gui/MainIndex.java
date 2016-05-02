@@ -10,12 +10,13 @@ import java.util.HashMap;
 /**
  * Created by Saad on 4/13/2016.
  */
-public class PageIndex extends Tippable {
+public class MainIndex extends Tippable {
 
     private boolean didInit = false;
     private HashMap<GuiButton, String> tips = new HashMap<>();
     private HashMap<GuiButton, ResourceLocation> regularTextures = new HashMap<>();
     private HashMap<GuiButton, ResourceLocation> hoverTextures = new HashMap<>();
+    private HashMap<GuiButton, Integer> ID = new HashMap<>();
 
     @Override
     public void initGui() {
@@ -52,7 +53,7 @@ public class PageIndex extends Tippable {
     protected void actionPerformed(GuiButton button) throws IOException {
         if (button.id == 0) {
             mc.thePlayer.openGui(Refraction.instance, GuiHandler.BASICS, mc.theWorld, (int) mc.thePlayer.posX, (int) mc.thePlayer.posY, (int) mc.thePlayer.posZ);
-            removeTip(getActiveTip());
+            clearTips();
         }
     }
 
@@ -73,12 +74,16 @@ public class PageIndex extends Tippable {
             button.yPosition = y;
             button.width = iconSize;
             button.height = iconSize;
-
             if (inside) {
-                setTip(tips.get(button));
+                ID.put(button, setTip(tips.get(button)));
                 mc.renderEngine.bindTexture(hoverTextures.get(button));
-            } else
+            } else {
+                if (ID.containsKey(button)) {
+                    removeTip(ID.get(button));
+                    ID.remove(button);
+                }
                 mc.renderEngine.bindTexture(regularTextures.get(button));
+            }
 
             drawScaledCustomSizeModalRect(x, y, 0, 0, iconSize, iconSize, iconSize, iconSize, iconSize, iconSize);
 

@@ -1,10 +1,7 @@
 package me.lordsaad.refraction.gui;
 
-import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.Table;
 import me.lordsaad.refraction.CraftingRecipes;
 import me.lordsaad.refraction.Refraction;
-import me.lordsaad.refraction.Utils;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.Item;
@@ -16,30 +13,33 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * Created by Saad on 4/19/2016.
+ * Created by Saad on 5/1/2016.
  */
-public class PageBasics extends Tippable {
+public class GuiContentPage extends Tippable {
 
-    public static int currentPage = 0;
-    public static HashMap<Integer, ArrayList<String>> pages;
-    static Table<Integer, Item, String> BADrecipes = HashBasedTable.create();
-    private static HashMap<Integer, HashMap<Item, String>> recipes = new HashMap<>();
-    private static int activeTipID;
-    private GuiButton BACK, NEXT, TOINDEX;
-    private HashMap<GuiButton, ResourceLocation> regularTextures = new HashMap<>();
-    private HashMap<GuiButton, ResourceLocation> hoverTextures = new HashMap<>();
+    public static HashMap<Integer, HashMap<Item, String>> recipes;
+    protected static HashMap<Integer, ArrayList<String>> pages;
+    static int currentPage = 0;
+    static int activeTipID;
+    static HashMap<GuiButton, ResourceLocation> regularTextures;
+    static HashMap<GuiButton, ResourceLocation> hoverTextures;
+    protected int pageID;
 
     @Override
     public void initGui() {
         super.initGui();
+        activeTipID = -1;
         pages = new HashMap<>();
+        recipes = new HashMap<>();
+        regularTextures = new HashMap<>();
+        hoverTextures = new HashMap<>();
         initButtons();
-        String TEXT_RESOURCE = "/assets/refraction/documentation/Basics.txt";
-        pages = Utils.splitTextToPages(pages, getClass().getResourceAsStream(TEXT_RESOURCE), this);
+        pageID = 0;
     }
 
     private void initButtons() {
         buttonList.clear();
+        GuiButton BACK, NEXT, TOINDEX;
         buttonList.add(BACK = new GuiButtonCategory(0, left, top * 3, 9, 18));
         buttonList.add(NEXT = new GuiButtonCategory(1, left + 135, top * 3, 9, 18));
         buttonList.add(TOINDEX = new GuiButtonCategory(2, left + 60, top * 3 + 10, 18, 18));
@@ -64,7 +64,7 @@ public class PageBasics extends Tippable {
             case 0: {
                 if (currentPage > 0) {
                     currentPage--;
-                    mc.thePlayer.openGui(Refraction.instance, GuiHandler.BASICS, mc.theWorld, (int) mc.thePlayer.posX, (int)
+                    mc.thePlayer.openGui(Refraction.instance, pageID, mc.theWorld, (int) mc.thePlayer.posX, (int)
                             mc.thePlayer.posY, (int) mc.thePlayer.posZ);
                 } else {
                     mc.thePlayer.openGui(Refraction.instance, GuiHandler.INDEX, mc.theWorld, (int) mc.thePlayer.posX, (int)
@@ -74,9 +74,9 @@ public class PageBasics extends Tippable {
                 break;
             }
             case 1: {
-                if (pages.size() + 1 >= currentPage) {
+                if (pages.size() > currentPage) {
                     currentPage++;
-                    mc.thePlayer.openGui(Refraction.instance, GuiHandler.BASICS, mc.theWorld, (int) mc.thePlayer.posX, (int)
+                    mc.thePlayer.openGui(Refraction.instance, pageID, mc.theWorld, (int) mc.thePlayer.posX, (int)
                             mc.thePlayer.posY, (int) mc.thePlayer.posZ);
                 }
                 break;
@@ -90,7 +90,6 @@ public class PageBasics extends Tippable {
         }
     }
 
-
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         super.drawScreen(mouseX, mouseY, partialTicks);
@@ -100,21 +99,8 @@ public class PageBasics extends Tippable {
         int height = 0;
         if (pages.containsKey(currentPage)) {
             for (String line : pages.get(currentPage)) {
-                if (line.contains("/r:")) {
-                    int requiredPage = Integer.parseInt(line.substring(line.indexOf("/r:") + 3).split(";")[0]);
-                    String itemName = line.substring(line.indexOf("/r:") + 3).split(";")[1];
-                    String comment = line.substring(line.indexOf("/r:") + 3).split(";")[2];
-                    Item item = Item.getByNameOrId(itemName);
-
-                    if (!recipes.containsKey(requiredPage)) {
-                        HashMap<Item, String> temp = new HashMap<>();
-                        temp.put(item, comment);
-                        recipes.put(requiredPage, temp);
-                    }
-                } else {
-                    fontRendererObj.drawString(line, left + 17, top + 13 + (height * 8), 0, false);
-                    height++;
-                }
+                fontRendererObj.drawString(line, left + 17, top + 13 + (height * 8), 0, false);
+                height++;
             }
         }
 
@@ -123,7 +109,10 @@ public class PageBasics extends Tippable {
                 HashMap<Integer, ItemStack> recipe = CraftingRecipes.recipes.get(new ItemStack(item).getDisplayName());
                 activeTipID = setTip(new ItemStack(item), recipe, recipes.get(currentPage).get(item));
             }
-        } else removeTip(activeTipID);
+        } else {
+            mc.thePlayer.sendChatMessage(currentPage + " -- " + activeTipID);
+            removeTip(activeTipID);
+        }
 
         GlStateManager.color(1F, 1F, 1F, 1F);
 

@@ -3,6 +3,7 @@ package me.lordsaad.refraction.gui;
 import me.lordsaad.refraction.Refraction;
 import me.lordsaad.refraction.Utils;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
@@ -24,16 +25,24 @@ public class Tippable extends PageBase {
     private static LinkedHashMap<Integer, HashMap<ItemStack, HashMap<Integer, ItemStack>>> tipRecipe = new LinkedHashMap<>();
     private static ArrayList<Integer> removeTip = new ArrayList<>();
 
-    public static void setTip(String tip) {
+    static int setTip(String tip) {
         if (!tipText.containsValue(tip)) {
             IDs++;
             tipText.put(IDs, tip);
             tipX.put(IDs, 0F);
             slideOut.put(IDs, true);
+            return IDs;
+        } else {
+            for (Map.Entry<Integer, String> entry : tipText.entrySet()) {
+                if (entry.getValue().equals(tip)) {
+                    return entry.getKey();
+                }
+            }
         }
+        return 0;
     }
 
-    public static int setTip(ItemStack recipeOutput, HashMap<Integer, ItemStack> recipe, String tip) {
+    static int setTip(ItemStack recipeOutput, HashMap<Integer, ItemStack> recipe, String tip) {
         if (!tipText.containsValue(tip)) {
             IDs++;
             tipText.put(IDs, tip);
@@ -53,7 +62,7 @@ public class Tippable extends PageBase {
         return 0;
     }
 
-    public static void clearTips() {
+    static void clearTips() {
         tipX.keySet().forEach(Tippable::removeTip);
         IDs = -1;
     }
@@ -62,7 +71,7 @@ public class Tippable extends PageBase {
         return IDs;
     }
 
-    public static void removeTip(int ID) {
+    static void removeTip(int ID) {
         slideOut.put(ID, false);
     }
 
@@ -83,14 +92,15 @@ public class Tippable extends PageBase {
         }
         removeTip.clear();
 
+        // Draw
         for (int ID : tipText.keySet()) {
 
             // Calculate x for each tip
             float x = tipX.get(ID);
             if (slideOut.containsKey(ID))
                 if (slideOut.get(ID)) {
-                    if (x >= -144) x -= ((145 - Math.abs(x)) / 5);
-                } else if (x <= 0) x += (Math.abs(x) / 5);
+                    if (x >= -144) x -= ((145 - Math.abs(x)) / 3);
+                } else if (x <= 0) x += (Math.abs(x) / 3);
             if (x <= -144 && ID != ID + 1)
                 if (tipX.containsKey(ID + 1))
                     if (tipX.get(ID + 1) <= -144) removeTip.add(ID);
@@ -128,6 +138,7 @@ public class Tippable extends PageBase {
                     itemRender.renderItemAndEffectIntoGUI(output, (int) (left + x / 1.13) + 100, (int) (height / 2.5) + 26);
 
                     // render recipe items
+                    RenderHelper.enableGUIStandardItemLighting();
                     HashMap<Integer, ItemStack> slots = tipRecipe.get(ID).get(output);
                     if (slots != null) {
                         int xSlot, ySlot;

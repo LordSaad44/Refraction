@@ -1,11 +1,12 @@
 package me.lordsaad.refraction;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
-import me.lordsaad.refraction.gui.PageBase;
+import me.lordsaad.refraction.gui.GuiContentPage;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.item.Item;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -41,8 +42,7 @@ public class Utils {
         return lines;
     }
 
-    public static HashMap<Integer, ArrayList<String>> splitTextToPages(HashMap<Integer, ArrayList<String>> pages,
-                                                                       InputStream stream, PageBase base) {
+    public static HashMap<Integer, ArrayList<String>> splitTextToPages(HashMap<Integer, ArrayList<String>> pages, InputStream stream, GuiContentPage page) {
         List<String> txt = new ArrayList<>();
         BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
         try {
@@ -75,7 +75,14 @@ public class Utils {
                 pagenb++;
                 pages.putIfAbsent(pagenb, new ArrayList<>());
             } else if (line.contains("/r")) {
-                pages.get(pagenb).add(line);
+                int requiredPage = Integer.parseInt(line.substring(line.indexOf("/r:") + 3).split(";")[0]);
+                String itemName = line.substring(line.indexOf("/r:") + 3).split(";")[1];
+                String comment = line.substring(line.indexOf("/r:") + 3).split(";")[2];
+                Item item = Item.getByNameOrId(itemName);
+
+                HashMap<Item, String> temp = new HashMap<>();
+                temp.put(item, comment);
+                GuiContentPage.recipes.put(requiredPage, temp);
             } else {
                 if (line.startsWith("*")) {
                     line = line.substring(line.indexOf("*") + 1);
