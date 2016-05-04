@@ -9,9 +9,9 @@ import net.minecraft.init.SoundEvents;
 /**
  * Created by Saad on 4/15/2016.
  */
-public class GuiButtonCategory extends GuiButton {
+public class Button extends GuiButton {
 
-    public GuiButtonCategory(int buttonId, float x, float y, float width, float height) {
+    public Button(int buttonId, float x, float y, float width, float height) {
         super(buttonId, (int) x, (int) y, (int) width, (int) height, "");
     }
 

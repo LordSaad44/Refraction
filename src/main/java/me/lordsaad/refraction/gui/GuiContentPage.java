@@ -20,9 +20,9 @@ public class GuiContentPage extends Tippable {
     public static HashMap<Integer, HashMap<Item, String>> recipes;
     protected static HashMap<Integer, ArrayList<String>> pages;
     static int currentPage = 0;
-    static int activeTipID;
     static HashMap<GuiButton, ResourceLocation> regularTextures;
     static HashMap<GuiButton, ResourceLocation> hoverTextures;
+    private static int activeTipID;
     protected int pageID;
 
     @Override
@@ -40,9 +40,9 @@ public class GuiContentPage extends Tippable {
     private void initButtons() {
         buttonList.clear();
         GuiButton BACK, NEXT, TOINDEX;
-        buttonList.add(BACK = new GuiButtonCategory(0, left, top * 3, 9, 18));
-        buttonList.add(NEXT = new GuiButtonCategory(1, left + 135, top * 3, 9, 18));
-        buttonList.add(TOINDEX = new GuiButtonCategory(2, left + 60, top * 3 + 10, 18, 18));
+        buttonList.add(BACK = new Button(0, left, top * 3, 9, 18));
+        buttonList.add(NEXT = new Button(1, left + 135, top * 3, 9, 18));
+        buttonList.add(TOINDEX = new Button(2, left + 60, top * 3 + 10, 18, 18));
 
         ResourceLocation back = new ResourceLocation(Refraction.MODID, "textures/gui/arrows/back.png");
         ResourceLocation back_hover = new ResourceLocation(Refraction.MODID, "textures/gui/arrows/hover_back.png");
@@ -109,10 +109,7 @@ public class GuiContentPage extends Tippable {
                 HashMap<Integer, ItemStack> recipe = CraftingRecipes.recipes.get(new ItemStack(item).getDisplayName());
                 activeTipID = setTip(new ItemStack(item), recipe, recipes.get(currentPage).get(item));
             }
-        } else {
-            mc.thePlayer.sendChatMessage(currentPage + " -- " + activeTipID);
-            removeTip(activeTipID);
-        }
+        } else removeTip(activeTipID);
 
         GlStateManager.color(1F, 1F, 1F, 1F);
 

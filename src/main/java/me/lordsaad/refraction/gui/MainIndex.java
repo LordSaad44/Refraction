@@ -16,7 +16,6 @@ public class MainIndex extends Tippable {
     private HashMap<GuiButton, String> tips = new HashMap<>();
     private HashMap<GuiButton, ResourceLocation> regularTextures = new HashMap<>();
     private HashMap<GuiButton, ResourceLocation> hoverTextures = new HashMap<>();
-    private HashMap<GuiButton, Integer> ID = new HashMap<>();
 
     @Override
     public void initGui() {
@@ -34,15 +33,15 @@ public class MainIndex extends Tippable {
         ResourceLocation sun_rad = new ResourceLocation(Refraction.MODID, "textures/gui/icons/sun-radiations.png");
         ResourceLocation sun_rad_hover = new ResourceLocation(Refraction.MODID, "textures/gui/icons/sun-radiations-hover.png");
 
-        addButton(new GuiButtonCategory(0, left + 25, top + 20, 25, 25), bulb, bulb_hover, "Learn the basics of light manipulation and how everything works.");
-        addButton(new GuiButtonCategory(1, left + 55, top + 20, 25, 25), laser_blast, laser_blast_hover, "Read about what each item and block in this mod does.");
-        addButton(new GuiButtonCategory(2, left + 90, top + 20, 25, 25), ringed_beam, ringed_beam_hover, "Learn " +
+        addButton(new Button(0, left + 25, top + 20, 25, 25), bulb, bulb_hover, "Learn the basics of light manipulation and how everything works.");
+        addButton(new Button(1, left + 55, top + 20, 25, 25), laser_blast, laser_blast_hover, "Read about what each item and block in this mod does.");
+        addButton(new Button(2, left + 90, top + 20, 25, 25), ringed_beam, ringed_beam_hover, "Learn " +
                 "how to accurately manipulate light beams.");
-        addButton(new GuiButtonCategory(3, left + 25, top + 60, 25, 25), sun_rad, sun_rad_hover, "Learn how to create, transport, manipulate, and store energy.");
+        addButton(new Button(3, left + 25, top + 60, 25, 25), sun_rad, sun_rad_hover, "Learn how to create, transport, manipulate, and store energy.");
         didInit = true;
     }
 
-    public void addButton(GuiButtonCategory button, ResourceLocation regularTexture, ResourceLocation hoverTexture, String tip) {
+    public void addButton(Button button, ResourceLocation regularTexture, ResourceLocation hoverTexture, String tip) {
         buttonList.add(button);
         tips.put(button, tip);
         regularTextures.put(button, regularTexture);

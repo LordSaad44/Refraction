@@ -2,6 +2,7 @@ package me.lordsaad.refraction.gui;
 
 import me.lordsaad.refraction.Refraction;
 import me.lordsaad.refraction.Utils;
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.ItemStack;
@@ -17,6 +18,7 @@ import java.util.Map;
  */
 public class Tippable extends PageBase {
 
+    static HashMap<GuiButton, Integer> ID = new HashMap<>();
     private static int IDs = 0;
     private static ResourceLocation SLIDERS = new ResourceLocation(Refraction.MODID, "textures/gui/sliders.png");
     private static LinkedHashMap<Integer, String> tipText = new LinkedHashMap<>();

@@ -1,6 +1,5 @@
 package me.lordsaad.refraction.gui;
 
-import net.minecraft.client.gui.GuiButton;
 import net.minecraft.util.ResourceLocation;
 
 /**
@@ -10,15 +9,16 @@ public class IndexItem {
 
     private int indexID, pageID;
     private ResourceLocation icon;
-    private String text;
-    private GuiButton button;
+    private String text, tip;
+    private Button button;
 
-    public IndexItem(int indexID, int pageID, ResourceLocation icon, String text, GuiButton button) {
+    public IndexItem(int indexID, int pageID, ResourceLocation icon, String text, String tip, Button button) {
         this.indexID = indexID;
         this.pageID = pageID;
         this.icon = icon;
         this.text = text;
         this.button = button;
+        this.tip = tip;
     }
 
     public int getIndexID() {
@@ -53,11 +53,19 @@ public class IndexItem {
         this.text = text;
     }
 
-    public GuiButton getButton() {
+    public Button getButton() {
         return button;
     }
 
-    public void setButton(GuiButton button) {
+    public void setButton(Button button) {
         this.button = button;
+    }
+
+    public String getTip() {
+        return tip;
+    }
+
+    public void setTip(String tip) {
+        this.tip = tip;
     }
 }
