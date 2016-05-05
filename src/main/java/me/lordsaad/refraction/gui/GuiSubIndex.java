@@ -14,17 +14,21 @@ import java.util.ArrayList;
  */
 public class GuiSubIndex extends GuiContentPage {
 
-    public ArrayList<IndexItem> indexItems;
+    protected ArrayList<IndexItem> indexItems;
 
     @Override
     public void initGui() {
         super.initGui();
         indexItems = new ArrayList<>();
+        hoverTextures.clear();
+        regularTextures.clear();
+        recipes.clear();
+        pages.clear();
+        buttonList.clear();
         initButtons();
     }
 
     private void initButtons() {
-        buttonList.clear();
         Button BACK, NEXT, TOINDEX;
         buttonList.add(BACK = new Button(0, left, top * 3, 9, 18));
         buttonList.add(NEXT = new Button(1, left + 135, top * 3, 9, 18));
@@ -102,12 +106,11 @@ public class GuiSubIndex extends GuiContentPage {
             item.getButton().drawButton(mc, x, y);
             drawScaledCustomSizeModalRect(x, y, 0, 0, 15, 15, 15, 15, 15, 15);
 
-            // TODO: tips not working here
             boolean inside = mouseX >= item.getButton().xPosition && mouseX < item.getButton().xPosition + item.getButton().width && mouseY >= item.getButton().yPosition && mouseY < item.getButton().yPosition + item.getButton().height;
             if (inside) {
                 x += 3;
                 fontRendererObj.drawString(" | " + ChatFormatting.ITALIC + item.getText().trim(), x + 17, y + fontRendererObj.FONT_HEIGHT / 2, 0);
-                ID.put(item.getButton(), setTip(item.getTip().trim()));
+                if (!ID.containsKey(item.getButton())) ID.put(item.getButton(), setTip(item.getTip().trim()));
             } else {
                 if (ID.containsKey(item.getButton())) {
                     removeTip(ID.get(item.getButton()));
@@ -116,27 +119,6 @@ public class GuiSubIndex extends GuiContentPage {
                 fontRendererObj.drawString(" | " + item.getText().trim(), x + 17, y + fontRendererObj.FONT_HEIGHT / 2, 0);
             }
         }
-
-        // redoing paging buttons because I'm not implementing everything GuiContent's drawScreen here.
-       /* for (GuiButton button : buttonList) {
-            boolean inside = mouseX >= button.xPosition && mouseX < button.xPosition + button.width && mouseY >= button.yPosition && mouseY < button.yPosition + button.height;
-            if (inside) mc.renderEngine.bindTexture(hoverTextures.get(button));
-            else mc.renderEngine.bindTexture(regularTextures.get(button));
-            switch (button.id) {
-                case 0:
-                    button.drawButton(mc, left, top * 3);
-                    drawScaledCustomSizeModalRect(left, top * 3, 0, 0, 10, 19, 10, 19, 10, 19);
-                    break;
-                case 1:
-                    button.drawButton(mc, left + 135, top * 3);
-                    drawScaledCustomSizeModalRect(left + 135, top * 3, 0, 0, 10, 19, 10, 19, 10, 19);
-                    break;
-                case 2:
-                    button.drawButton(mc, left + 60, top * 3 + 10);
-                    drawScaledCustomSizeModalRect(left + 60, top * 3 + 10, 0, 0, 19, 19, 19, 19, 19, 19);
-                    break;
-            }
-        }*/
 
         GlStateManager.color(1F, 1F, 1F, 1F);
         mc.renderEngine.bindTexture(BACKGROUND_TEXTURE);

@@ -22,17 +22,16 @@ public class GuiContentPage extends Tippable {
     static int currentPage = 0;
     static HashMap<GuiButton, ResourceLocation> regularTextures;
     static HashMap<GuiButton, ResourceLocation> hoverTextures;
-    private static int activeTipID;
     protected int pageID;
 
     @Override
     public void initGui() {
         super.initGui();
-        activeTipID = -1;
         pages = new HashMap<>();
         recipes = new HashMap<>();
         regularTextures = new HashMap<>();
         hoverTextures = new HashMap<>();
+        clearTips();
         initButtons();
         pageID = 0;
     }
@@ -107,9 +106,9 @@ public class GuiContentPage extends Tippable {
         if (recipes.containsKey(currentPage)) {
             for (Item item : recipes.get(currentPage).keySet()) {
                 HashMap<Integer, ItemStack> recipe = CraftingRecipes.recipes.get(new ItemStack(item).getDisplayName());
-                activeTipID = setTip(new ItemStack(item), recipe, recipes.get(currentPage).get(item));
+                ID.put(item, setTip(new ItemStack(item), recipe, recipes.get(currentPage).get(item)));
             }
-        } else removeTip(activeTipID);
+        } else ID.keySet().stream().filter(obj -> obj instanceof Item).forEach(obj -> removeTip(ID.get(obj)));
 
         GlStateManager.color(1F, 1F, 1F, 1F);
 

@@ -20,7 +20,6 @@ public class MainIndex extends Tippable {
     @Override
     public void initGui() {
         super.initGui();
-        clearTips();
     }
 
     private void initIndexButtons() {
@@ -77,10 +76,7 @@ public class MainIndex extends Tippable {
                 ID.put(button, setTip(tips.get(button)));
                 mc.renderEngine.bindTexture(hoverTextures.get(button));
             } else {
-                if (ID.containsKey(button)) {
-                    removeTip(ID.get(button));
-                    ID.remove(button);
-                }
+                if (ID.containsKey(button)) removeTip(ID.get(button));
                 mc.renderEngine.bindTexture(regularTextures.get(button));
             }
 

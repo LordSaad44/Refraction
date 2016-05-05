@@ -32,4 +32,9 @@ public class PageBase extends GuiScreen {
         return true;
     }
 
+    @Override
+    public void onGuiClosed() {
+        Tippable.ID.clear();
+
+    }
 }

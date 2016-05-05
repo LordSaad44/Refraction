@@ -2,7 +2,6 @@ package me.lordsaad.refraction.gui;
 
 import me.lordsaad.refraction.Refraction;
 import me.lordsaad.refraction.Utils;
-import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.ItemStack;
@@ -18,7 +17,7 @@ import java.util.Map;
  */
 public class Tippable extends PageBase {
 
-    static HashMap<GuiButton, Integer> ID = new HashMap<>();
+    static HashMap<Object, Integer> ID = new HashMap<>();
     private static int IDs = 0;
     private static ResourceLocation SLIDERS = new ResourceLocation(Refraction.MODID, "textures/gui/sliders.png");
     private static LinkedHashMap<Integer, String> tipText = new LinkedHashMap<>();
@@ -28,23 +27,21 @@ public class Tippable extends PageBase {
     private static ArrayList<Integer> removeTip = new ArrayList<>();
 
     static int setTip(String tip) {
+        for (int i = 0; i < IDs; i++) if (tipX.containsKey(i)) removeTip(i);
         if (!tipText.containsValue(tip)) {
             IDs++;
             tipText.put(IDs, tip);
             tipX.put(IDs, 0F);
             slideOut.put(IDs, true);
             return IDs;
-        } else {
-            for (Map.Entry<Integer, String> entry : tipText.entrySet()) {
-                if (entry.getValue().equals(tip)) {
-                    return entry.getKey();
-                }
-            }
-        }
+        } else
+            for (Map.Entry<Integer, String> entry : tipText.entrySet())
+                if (entry.getValue().equals(tip)) return entry.getKey();
         return 0;
     }
 
     static int setTip(ItemStack recipeOutput, HashMap<Integer, ItemStack> recipe, String tip) {
+        for (int i = 0; i < IDs; i++) if (tipX.containsKey(i)) removeTip(i);
         if (!tipText.containsValue(tip)) {
             IDs++;
             tipText.put(IDs, tip);
@@ -54,13 +51,9 @@ public class Tippable extends PageBase {
             tipRecipe.put(IDs, temp);
             slideOut.put(IDs, true);
             return IDs;
-        } else {
-            for (Map.Entry<Integer, String> entry : tipText.entrySet()) {
-                if (entry.getValue().equals(tip)) {
-                    return entry.getKey();
-                }
-            }
-        }
+        } else
+            for (Map.Entry<Integer, String> entry : tipText.entrySet())
+                if (entry.getValue().equals(tip)) return entry.getKey();
         return 0;
     }
 
@@ -69,17 +62,15 @@ public class Tippable extends PageBase {
         IDs = -1;
     }
 
-    public static int getActiveTip() {
-        return IDs;
-    }
-
     static void removeTip(int ID) {
-        slideOut.put(ID, false);
+        if (slideOut.containsKey(ID))
+            slideOut.put(ID, false);
     }
 
     @Override
     public void initGui() {
         super.initGui();
+        clearTips();
     }
 
     @Override
@@ -91,6 +82,7 @@ public class Tippable extends PageBase {
             if (tipX.containsKey(ID)) tipX.remove(ID);
             if (tipText.containsKey(ID)) tipText.remove(ID);
             if (tipRecipe.containsKey(ID)) tipRecipe.remove(ID);
+            if (slideOut.containsKey(ID)) slideOut.remove(ID);
         }
         removeTip.clear();
 
@@ -99,10 +91,14 @@ public class Tippable extends PageBase {
 
             // Calculate x for each tip
             float x = tipX.get(ID);
-            if (slideOut.containsKey(ID))
+            if (slideOut.containsKey(ID)) {
                 if (slideOut.get(ID)) {
-                    if (x >= -144) x -= ((145 - Math.abs(x)) / 3);
-                } else if (x <= 0) x += (Math.abs(x) / 3);
+                    if (x >= -144) x -= (145 - Math.abs(x)) / 3;
+                } else if (x <= 0)
+                    if ((145 - Math.abs(x)) / 2 != x) x += (145 - Math.abs(x)) / 2;
+                    else removeTip.add(ID);
+            } else removeTip.add(ID);
+
             if (x <= -144 && ID != ID + 1)
                 if (tipX.containsKey(ID + 1))
                     if (tipX.get(ID + 1) <= -144) removeTip.add(ID);
