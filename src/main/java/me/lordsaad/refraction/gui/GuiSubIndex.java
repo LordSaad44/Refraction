@@ -4,7 +4,6 @@ import com.mojang.realmsclient.gui.ChatFormatting;
 import me.lordsaad.refraction.Refraction;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.util.ResourceLocation;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -24,28 +23,7 @@ public class GuiSubIndex extends GuiContentPage {
         regularTextures.clear();
         recipes.clear();
         pages.clear();
-        buttonList.clear();
-        initButtons();
-    }
-
-    private void initButtons() {
-        Button BACK, NEXT, TOINDEX;
-        buttonList.add(BACK = new Button(0, left, top * 3, 9, 18));
-        buttonList.add(NEXT = new Button(1, left + 135, top * 3, 9, 18));
-        buttonList.add(TOINDEX = new Button(2, left + 60, top * 3 + 10, 18, 18));
-
-        ResourceLocation back = new ResourceLocation(Refraction.MODID, "textures/gui/arrows/back.png");
-        ResourceLocation back_hover = new ResourceLocation(Refraction.MODID, "textures/gui/arrows/hover_back.png");
-        ResourceLocation next = new ResourceLocation(Refraction.MODID, "textures/gui/arrows/next.png");
-        ResourceLocation next_hover = new ResourceLocation(Refraction.MODID, "textures/gui/arrows/hover_next.png");
-        ResourceLocation toIndex = new ResourceLocation(Refraction.MODID, "textures/gui/arrows/to_index.png");
-        ResourceLocation toIndex_hover = new ResourceLocation(Refraction.MODID, "textures/gui/arrows/hover_to_index.png");
-        regularTextures.put(TOINDEX, toIndex);
-        regularTextures.put(BACK, back);
-        regularTextures.put(NEXT, next);
-        hoverTextures.put(TOINDEX, toIndex_hover);
-        hoverTextures.put(BACK, back_hover);
-        hoverTextures.put(NEXT, next_hover);
+        enableNavBar(true);
     }
 
     @Override

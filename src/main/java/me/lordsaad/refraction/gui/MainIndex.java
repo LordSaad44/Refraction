@@ -20,6 +20,7 @@ public class MainIndex extends Tippable {
     @Override
     public void initGui() {
         super.initGui();
+        enableNavBar(false);
     }
 
     private void initIndexButtons() {

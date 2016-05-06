@@ -27,7 +27,6 @@ public class Tippable extends PageBase {
     private static ArrayList<Integer> removeTip = new ArrayList<>();
 
     static int setTip(String tip) {
-        for (int i = 0; i < IDs; i++) if (tipX.containsKey(i)) removeTip(i);
         if (!tipText.containsValue(tip)) {
             IDs++;
             tipText.put(IDs, tip);
@@ -41,7 +40,7 @@ public class Tippable extends PageBase {
     }
 
     static int setTip(ItemStack recipeOutput, HashMap<Integer, ItemStack> recipe, String tip) {
-        for (int i = 0; i < IDs; i++) if (tipX.containsKey(i)) removeTip(i);
+        tipText.keySet().stream().filter(tempID -> !tipText.get(tempID).equals(tip)).forEach(Tippable::removeTip);
         if (!tipText.containsValue(tip)) {
             IDs++;
             tipText.put(IDs, tip);
