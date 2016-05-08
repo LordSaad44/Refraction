@@ -2,11 +2,14 @@ package me.lordsaad.refraction;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
 import me.lordsaad.refraction.gui.GuiContentPage;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -33,6 +36,16 @@ public class Utils {
         float f2 = -MathHelper.cos(-pitch * 0.017453292F);
         float f3 = MathHelper.sin(-pitch * 0.017453292F);
         return new Vec3d((double) (f1 * f2), (double) f3, (double) (f * f2));
+    }
+
+    public static void drawItemStack(final ItemStack itemStack, final int x, final int y) {
+        if (itemStack != null && itemStack.getItem() != null) {
+            GlStateManager.enableRescaleNormal();
+            RenderHelper.enableGUIStandardItemLighting();
+            Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(itemStack, x, y);
+            RenderHelper.disableStandardItemLighting();
+            GlStateManager.disableRescaleNormal();
+        }
     }
 
     public static ArrayList<String> padString(String string, int stringSize) {

@@ -3,7 +3,6 @@ package me.lordsaad.refraction.gui;
 import me.lordsaad.refraction.Refraction;
 import me.lordsaad.refraction.Utils;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
@@ -132,10 +131,15 @@ public class Tippable extends PageBase {
                     ItemStack output = null;
                     for (ItemStack tempStack : tipRecipe.get(ID).keySet()) output = tempStack;
                     if (output == null) return;
-                    itemRender.renderItemAndEffectIntoGUI(output, (int) (left + x / 1.13) + 100, (int) (height / 2.5) + 26);
+                    int outputX = (int) (left + x / 1.13) + 100, outputY = (int) (height / 2.5) + 26;
+                    int size = 20;
+                    Utils.drawItemStack(output, outputX, outputY);
+                    boolean inside = mouseX >= outputX && mouseX < outputX + size && mouseY >= outputY && mouseY < outputY + size;
+                    if (inside) renderToolTip(output, mouseX, mouseY);
+
+                    //itemRender.renderItemAndEffectIntoGUI(output, (int) (left + x / 1.13) + 100, (int) (height / 2.5) + 26);
 
                     // render recipe items
-                    RenderHelper.enableGUIStandardItemLighting();
                     HashMap<Integer, ItemStack> slots = tipRecipe.get(ID).get(output);
                     if (slots != null) {
                         int xSlot, ySlot;
@@ -184,8 +188,12 @@ public class Tippable extends PageBase {
                                     break;
                             }
 
-                            if (slots.get(slot) != null)
-                                itemRender.renderItemAndEffectIntoGUI(slots.get(slot), (int) ((left + x / 1.13) + 9 + xSlot * 18), (int) (height / 2.5) + 8 + ySlot * 18);
+                            if (slots.get(slot) != null) {
+                                int slotX = (int) ((left + x / 1.13) + 9 + xSlot * 18), slotY = (int) (height / 2.5) + 8 + ySlot * 18;
+                                Utils.drawItemStack(slots.get(slot), slotX, slotY);
+                                boolean insideSlot = mouseX >= slotX && mouseX < slotX + size && mouseY >= slotY && mouseY < slotY + size;
+                                if (insideSlot) renderToolTip(slots.get(slot), mouseX, mouseY);
+                            }
                         }
                     }
                 }

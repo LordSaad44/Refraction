@@ -56,10 +56,8 @@ public class GuiSubIndex extends GuiContentPage {
                 break;
             }
             default: {
-                indexItems.stream().filter(item -> item.getButton() == button).forEach(item -> {
-                    mc.thePlayer.openGui(Refraction.instance, item.getPageID(), mc.theWorld, (int) mc.thePlayer.posX, (int) mc.thePlayer.posY, (int) mc.thePlayer.posZ);
-
-                });
+                indexItems.stream().filter(item -> item.getButton() == button).forEach(item -> mc.thePlayer.openGui(Refraction.instance, item.getPageID(), mc.theWorld, (int) mc.thePlayer.posX, (int) mc.thePlayer.posY, (int) mc.thePlayer.posZ));
+                break;
             }
         }
     }
