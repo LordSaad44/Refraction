@@ -1,6 +1,8 @@
 package me.lordsaad.refraction.blocks;
 
 import me.lordsaad.refraction.ModItems;
+import me.lordsaad.refraction.Refraction;
+import me.lordsaad.refraction.Utils;
 import me.lordsaad.refraction.network.PacketHandler;
 import me.lordsaad.refraction.network.PacketMirror;
 import me.lordsaad.refraction.tesrs.TESRMirror;
@@ -30,6 +32,8 @@ import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import java.util.Random;
 
 /**
  * Created by Saad on 3/24/2016.
@@ -62,10 +66,10 @@ public class BlockMirror extends BlockDirectional implements ITileEntityProvider
 
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
+        TileEntityMirror mirror = getTE(worldIn, pos);
         if (!worldIn.isRemote) {
             if (playerIn.inventory.getCurrentItem().getItem() == ModItems.screwdriver) {
                 if (!playerIn.isSneaking()) {
-                    TileEntityMirror mirror = getTE(worldIn, pos);
 
                     if (side != EnumFacing.UP && side != EnumFacing.DOWN) {
                         boolean top = hitY >= 0.7f, bottom = hitY <= 0.3;
@@ -122,6 +126,15 @@ public class BlockMirror extends BlockDirectional implements ITileEntityProvider
                 }
             } else return false;
         }
+        Random random = new Random();
+        double offX = random.nextFloat() * 0.5 - 0.25;
+        double offY = random.nextFloat() * 0.5 - 0.25;
+        double offZ = random.nextFloat() * 0.5 - 0.25;
+        double coeff = (offX + offY + offZ) / 1.5 + 0.5;
+        double dx = (Utils.getVectorForRotation3d(mirror.getPitch(), mirror.getYaw()).xCoord + offX) * coeff;
+        double dy = (Utils.getVectorForRotation3d(mirror.getPitch(), mirror.getYaw()).yCoord + offY) * coeff;
+        double dz = (Utils.getVectorForRotation3d(mirror.getPitch(), mirror.getYaw()).zCoord + offZ) * coeff;
+        Refraction.proxy.spawnParticleSparkleLine(worldIn, pos.getX() + dx, pos.getY() + 1.5 + dy, pos.getZ() + dz, dx, dy, dz, 1, 2, 0.3);
         return true;
     }
 

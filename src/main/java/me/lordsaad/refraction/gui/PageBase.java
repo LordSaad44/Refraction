@@ -14,9 +14,13 @@ import static me.lordsaad.refraction.gui.GuiContentPage.regularTextures;
  */
 public class PageBase extends GuiScreen {
 
+    protected static int top;
     static int guiWidth = 146, guiHeight = 180;
-    static int left, top, right;
+    static int left;
+    static int right;
     static ResourceLocation BACKGROUND_TEXTURE = new ResourceLocation(Refraction.MODID, "textures/gui/book.png");
+    static boolean hasBookmark = false;
+    static PageBase bookmarkedPage = null;
     private boolean hasNavBar = false;
 
     @Override
@@ -51,6 +55,23 @@ public class PageBase extends GuiScreen {
         } else hasNavBar = false;
     }
 
+    public void renderBookmark(int y, boolean withStripe) {
+        buttonList.stream().filter(button -> button.id == 3).forEach(button -> {
+            mc.renderEngine.bindTexture(BACKGROUND_TEXTURE);
+            GlStateManager.color(1F, 1F, 1F, 1F);
+            button.xPosition = left + 120;
+            button.yPosition = top + 8;
+            button.drawButton(mc, left + 120, top + 8);
+        });
+        GlStateManager.color(1F, 1F, 1F, 1F);
+        drawTexturedModalRect(left + 120, top + 8, 0, 180, 7, 7);
+        if (hasBookmark) {
+            GlStateManager.color(1F, 1F, 1F, 1F);
+            drawTexturedModalRect(left + 14, y, 152, 0, 16, 195);
+            if (withStripe) drawTexturedModalRect(left + 117, top + 6, 0, 187, 14, 13);
+        }
+    }
+
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         super.drawScreen(mouseX, mouseY, partialTicks);
@@ -62,28 +83,32 @@ public class PageBase extends GuiScreen {
             mc.renderEngine.bindTexture(BACKGROUND_TEXTURE);
             drawTexturedModalRect((width / 2) - 66, y - 2, 19, 182, 133, 14);
             for (GuiButton button : buttonList) {
-                boolean inside = mouseX >= button.xPosition && mouseX < button.xPosition + button.width && mouseY >= button.yPosition && mouseY < button.yPosition + button.height;
-                if (inside) mc.renderEngine.bindTexture(hoverTextures.get(button));
-                else mc.renderEngine.bindTexture(regularTextures.get(button));
-                switch (button.id) {
-                    case 0:
-                        button.xPosition = left + 12;
-                        button.yPosition = y;
-                        button.drawButton(mc, left + 12, y);
-                        drawScaledCustomSizeModalRect(left + 12, y, 0, 0, 6, 10, 6, 10, 6, 10);
-                        break;
-                    case 1:
-                        button.xPosition = right - 12;
-                        button.yPosition = y;
-                        button.drawButton(mc, right - 12, y);
-                        drawScaledCustomSizeModalRect(right - 12, y, 0, 0, 6, 10, 6, 10, 6, 10);
-                        break;
-                    case 2:
-                        button.xPosition = width / 2 - 6;
-                        button.yPosition = y;
-                        button.drawButton(mc, width / 2 - 6, y);
-                        drawScaledCustomSizeModalRect(width / 2 - 6, y, 0, 0, 12, 11, 12, 11, 12, 11);
-                        break;
+                if (hoverTextures.containsKey(button) && regularTextures.containsKey(button)) {
+
+                    boolean inside = mouseX >= button.xPosition && mouseX < button.xPosition + button.width && mouseY >= button.yPosition && mouseY < button.yPosition + button.height;
+                    if (inside) mc.renderEngine.bindTexture(hoverTextures.get(button));
+                    else mc.renderEngine.bindTexture(regularTextures.get(button));
+
+                    switch (button.id) {
+                        case 0:
+                            button.xPosition = left + 12;
+                            button.yPosition = y;
+                            button.drawButton(mc, left + 12, y);
+                            drawScaledCustomSizeModalRect(left + 12, y, 0, 0, 6, 10, 6, 10, 6, 10);
+                            break;
+                        case 1:
+                            button.xPosition = right - 12;
+                            button.yPosition = y;
+                            button.drawButton(mc, right - 12, y);
+                            drawScaledCustomSizeModalRect(right - 12, y, 0, 0, 6, 10, 6, 10, 6, 10);
+                            break;
+                        case 2:
+                            button.xPosition = width / 2 - 6;
+                            button.yPosition = y;
+                            button.drawButton(mc, width / 2 - 6, y);
+                            drawScaledCustomSizeModalRect(width / 2 - 6, y, 0, 0, 12, 11, 12, 11, 12, 11);
+                            break;
+                    }
                 }
             }
         }

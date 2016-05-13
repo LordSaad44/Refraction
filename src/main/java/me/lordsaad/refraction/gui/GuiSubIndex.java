@@ -86,12 +86,12 @@ public class GuiSubIndex extends GuiContentPage {
             if (inside) {
                 x += 3;
                 fontRendererObj.drawString(" | " + ChatFormatting.ITALIC + item.getText().trim(), x + 17, y + fontRendererObj.FONT_HEIGHT / 2, 0);
-                if (!ID.containsKey(item.getButton())) ID.put(item.getButton(), setTip(item.getTip().trim()));
+                //     if (!ID.containsKey(item.getButton())) ID.put(item.getButton(), setTip(item.getTip().trim()));
             } else {
-                if (ID.containsKey(item.getButton())) {
-                    removeTip(ID.get(item.getButton()));
-                    ID.remove(item.getButton());
-                }
+                //   if (ID.containsKey(item.getButton())) {
+                //      removeTip(ID.get(item.getButton()));
+                //      ID.remove(item.getButton());
+                //    }
                 fontRendererObj.drawString(" | " + item.getText().trim(), x + 17, y + fontRendererObj.FONT_HEIGHT / 2, 0);
             }
         }

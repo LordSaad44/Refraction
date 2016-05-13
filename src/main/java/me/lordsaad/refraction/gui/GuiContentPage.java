@@ -22,6 +22,7 @@ public class GuiContentPage extends Tippable {
     static int currentPage = 0;
     static HashMap<GuiButton, ResourceLocation> regularTextures;
     static HashMap<GuiButton, ResourceLocation> hoverTextures;
+    public boolean hasBookmark = PageBase.hasBookmark;
     protected int pageID;
 
     @Override
@@ -34,6 +35,7 @@ public class GuiContentPage extends Tippable {
         clearTips();
         enableNavBar(true);
         pageID = 0;
+        buttonList.add(new Button(3, 0, 0, 8, 8));
     }
 
     @Override
@@ -64,6 +66,15 @@ public class GuiContentPage extends Tippable {
                         mc.thePlayer.posY, (int) mc.thePlayer.posZ);
                 currentPage = 0;
                 break;
+            }
+            case 3: {
+                if (bookmarkedPage == this) {
+                    bookmarkedPage = null;
+                    hasBookmark = false;
+                } else {
+                    bookmarkedPage = this;
+                    hasBookmark = true;
+                }
             }
         }
     }
