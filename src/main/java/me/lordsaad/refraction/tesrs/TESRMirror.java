@@ -63,9 +63,10 @@ public class TESRMirror extends TileEntitySpecialRenderer<TileEntityMirror> {
 
         // RAYTRACE //
         Vec3d centervec = new Vec3d(te.getPos().getX() + 0.5, te.getPos().getY() + 0.8, te.getPos().getZ() + 0.5);
-
-        Vec3d lookvec = Utils.getVectorForRotation3d(te.getEffectivePitch() - 90, te.getYaw()).normalize();
+        Vec3d lookvec = Utils.getVectorForRotation3d(te.getBeamPitch(), te.getBeamYaw());
         Vec3d startvec = centervec.add(lookvec);
+
+        //player.addChatComponentMessage(new TextComponentString(player.rotationPitch + " - " + player.rotationYaw));
 
         Vec3d end = startvec.add(new Vec3d(lookvec.xCoord * 100, lookvec.yCoord * 100, lookvec.zCoord * 100));
         RayTraceResult result = te.getWorld().rayTraceBlocks(startvec, end, true, false, true);
@@ -75,22 +76,30 @@ public class TESRMirror extends TileEntitySpecialRenderer<TileEntityMirror> {
 
         // ORIENT PAD //
         EnumFacing facing = te.getWorld().getBlockState(te.getPos()).getValue(BlockMirror.FACING);
-        if (facing == EnumFacing.NORTH) {
-            GlStateManager.translate(0.5, 0.5, 0.4);
-        } else if (facing == EnumFacing.SOUTH) {
-            GlStateManager.translate(0.5, 0.5, 0.6);
-        } else if (facing == EnumFacing.EAST) {
-            GlStateManager.translate(0.6, 0.5, 0.5);
-        } else if (facing == EnumFacing.WEST) {
-            GlStateManager.translate(0.4, 0.5, 0.5);
-        } else if (facing == EnumFacing.DOWN) {
-            GlStateManager.translate(0.5, 0.4, 0.5);
-        } else if (facing == EnumFacing.UP) {
-            GlStateManager.translate(0.5, 0.6, 0.5);
+
+        switch (facing) {
+            case NORTH:
+                GlStateManager.translate(0.5, 0.5, 0.4);
+                break;
+            case SOUTH:
+                GlStateManager.translate(0.5, 0.5, 0.6);
+                break;
+            case EAST:
+                GlStateManager.translate(0.6, 0.5, 0.5);
+                break;
+            case WEST:
+                GlStateManager.translate(0.4, 0.5, 0.5);
+                break;
+            case DOWN:
+                GlStateManager.translate(0.5, 0.4, 0.5);
+                break;
+            case UP:
+                GlStateManager.translate(0.5, 0.6, 0.5);
+                break;
         }
 
-        GlStateManager.rotate(te.getYaw(), 0, 0, 1);
-        GlStateManager.rotate(te.getPitch(), 1, 0, 0);
+        GlStateManager.rotate(te.getPadYaw(), 0, 0, 1);
+        GlStateManager.rotate(te.getPadPitch(), 1, 0, 0);
 
         RenderHelper.disableStandardItemLighting();
         bindTexture(TextureMap.locationBlocksTexture);

@@ -14,29 +14,36 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
  */
 public class PacketMirror implements IMessage {
 
-    private int yaw, pitch = -90;
+    private int padYaw, padPitch = 0;
+    private int beamYaw, beamPitch = 0;
     private BlockPos pos;
 
     public PacketMirror() {
     }
 
-    public PacketMirror(int yaw, int pitch, BlockPos pos) {
-        this.yaw = yaw;
-        this.pitch = pitch;
+    public PacketMirror(int padYaw, int padPitch, int beamYaw, int beamPitch, BlockPos pos) {
+        this.padYaw = padYaw;
+        this.padPitch = padPitch;
+        this.beamYaw = beamYaw;
+        this.beamPitch = beamPitch;
         this.pos = pos;
     }
 
     @Override
     public void fromBytes(ByteBuf byteBuf) {
-        yaw = byteBuf.readInt();
-        pitch = byteBuf.readInt();
+        padYaw = byteBuf.readInt();
+        padPitch = byteBuf.readInt();
+        beamYaw = byteBuf.readInt();
+        beamPitch = byteBuf.readInt();
         pos = new BlockPos(byteBuf.readInt(), byteBuf.readInt(), byteBuf.readInt());
     }
 
     @Override
     public void toBytes(ByteBuf byteBuf) {
-        byteBuf.writeInt(yaw);
-        byteBuf.writeInt(pitch);
+        byteBuf.writeInt(padYaw);
+        byteBuf.writeInt(padPitch);
+        byteBuf.writeInt(beamYaw);
+        byteBuf.writeInt(beamPitch);
         byteBuf.writeInt(pos.getX());
         byteBuf.writeInt(pos.getY());
         byteBuf.writeInt(pos.getZ());
@@ -46,14 +53,18 @@ public class PacketMirror implements IMessage {
 
         @Override
         public IMessage onMessage(PacketMirror mirror, MessageContext messageContext) {
-            int yaw = mirror.yaw;
-            int pitch = mirror.pitch;
+            int padYaw = mirror.padYaw;
+            int padPitch = mirror.padPitch;
+            int beamYaw = mirror.beamYaw;
+            int beamPitch = mirror.beamPitch;
             BlockPos pos = mirror.pos;
             TileEntity tileEntity = Minecraft.getMinecraft().theWorld.getTileEntity(pos);
             if (tileEntity instanceof TileEntityMirror) {
                 TileEntityMirror tileEntityMirror = (TileEntityMirror) tileEntity;
-                tileEntityMirror.setYaw(yaw);
-                tileEntityMirror.setPitch(pitch);
+                tileEntityMirror.setPadYaw(padYaw);
+                tileEntityMirror.setPadPitch(padPitch);
+                tileEntityMirror.setBeamYaw(beamYaw);
+                tileEntityMirror.setBeamPitch(beamPitch);
             }
             return null;
         }

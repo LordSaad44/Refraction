@@ -5,111 +5,80 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-
-import static net.minecraft.util.EnumFacing.*;
 
 /**
  * Created by Saad on 3/24/2016.
  */
 public class TileEntityMirror extends TileEntity {
 
-    private int yaw = 0, pitch = 0;
-    private int effectiveYaw = 0, effectivePitch = 0;
+    private int padYaw = 0, padPitch = 0;
+    private int beamPitch = 0, beamYaw = 0;
 
-    public EnumFacing getEffectiveHorizontalDirection() {
-        if (yaw < 0) return EAST;
-        else if (yaw > 0) return WEST;
-        else if (pitch < 0) return NORTH;
-        else if (pitch > 0) return SOUTH;
-        else return UP;
+    public int getBeamPitch() {
+        return beamPitch;
     }
 
-    // The effective pitch is the correct pitch that light beams are drawn from
-    public int getEffectivePitch() {
-        return effectivePitch;
+    public void setBeamPitch(int beamPitch) {
+        this.beamPitch = beamPitch;
     }
 
-    public void setEffectivePitch(int effectivePitch) {
-        this.effectivePitch = effectivePitch;
+    public int getBeamYaw() {
+        return beamYaw;
     }
 
-    public void addEffectivePitch(int amount) {
-        if (effectivePitch == 90) effectivePitch = -89;
-        if (effectivePitch == -90) effectivePitch = 89;
-        if (effectivePitch < 90 && effectivePitch > -90) effectivePitch += amount;
+    public void setBeamYaw(int beamYaw) {
+        this.beamYaw = beamYaw;
     }
 
-    public void subtractEffectivePitch(int amount) {
-        if (effectivePitch == 90) effectivePitch = -89;
-        if (effectivePitch == -90) effectivePitch = 89;
-        if (effectivePitch < 90 && effectivePitch > -90) effectivePitch -= amount;
-    }
-
-    // The effective yaw is the correct yaw that light beams are drawn from
-    public int getEffectiveYaw() {
-        return effectiveYaw;
-    }
-
-    public void setEffectiveYaw(int effectiveYaw) {
-        this.effectiveYaw = effectiveYaw;
-    }
-
-    public void addEffectiveYaw(int amount) {
-        if (effectiveYaw == 180) effectiveYaw = -179;
-        if (effectiveYaw == -180) effectiveYaw = 179;
-        if (effectiveYaw < 180 && effectiveYaw > -180) effectiveYaw += amount;
-    }
-
-    public void subtractEffectiveYaw(int amount) {
-        if (effectiveYaw == 180) effectiveYaw = -179;
-        if (effectiveYaw == -180) effectiveYaw = 179;
-        if (effectiveYaw < 180 && effectiveYaw > -180) effectiveYaw -= amount;
-    }
-
-    public int getPitch() {
-        return pitch;
-    }
-
-    public void setPitch(int pitch) {
-        this.pitch = pitch;
+    public void addPadPitch(int amount) {
+        if (padPitch == 90) padPitch = -89;
+        if (padPitch == -90) padPitch = 89;
+        if (padPitch < 90 && padPitch > -90) {
+            padPitch += amount;
+        }
         markDirty();
     }
 
-    public void addPitch(int amount) {
-        if (pitch == 90) pitch = -89;
-        if (pitch == -90) pitch = 89;
-        if (pitch < 90 && pitch > -90) pitch += amount;
+    public void subtractPadPitch(int amount) {
+        if (padPitch == 90) padPitch = -89;
+        if (padPitch == -90) padPitch = 89;
+        if (padPitch < 90 && padPitch > -90) {
+            padPitch -= amount;
+        }
         markDirty();
     }
 
-    public void subtractPitch(int amount) {
-        if (pitch == 90) pitch = -89;
-        if (pitch == -90) pitch = 89;
-        if (pitch < 90 && pitch > -90) pitch -= amount;
+    public void addPadYaw(int amount) {
+        if (padYaw == 180) padYaw = -179;
+        if (padYaw == -180) padYaw = 179;
+        if (padYaw < 180 && padYaw > -180) padYaw += amount;
+
         markDirty();
     }
 
-    public int getYaw() {
-        return yaw;
-    }
+    public void subtractPadYaw(int amount) {
+        if (padYaw == 180) padYaw = -179;
+        if (padYaw == -180) padYaw = 179;
+        if (padYaw < 180 && padYaw > -180) padYaw -= amount;
 
-    public void setYaw(int yaw) {
-        this.yaw = yaw;
         markDirty();
     }
 
-    public void addYaw(int amount) {
-        if (yaw == 180) yaw = -179;
-        if (yaw == -180) yaw = 179;
-        if (yaw < 180 && yaw > -180) yaw += amount;
+    public int getPadPitch() {
+        return padPitch;
+    }
+
+    public void setPadPitch(int pitch) {
+        this.padPitch = pitch;
         markDirty();
     }
 
-    public void subtractYaw(int amount) {
-        if (yaw == 180) yaw = -179;
-        if (yaw == -180) yaw = 179;
-        if (yaw < 180 && yaw > -180) yaw -= amount;
+    public int getPadYaw() {
+        return padYaw;
+    }
+
+    public void setPadYaw(int yaw) {
+        this.padYaw = yaw;
         markDirty();
     }
 
@@ -128,14 +97,18 @@ public class TileEntityMirror extends TileEntity {
     @Override
     public void readFromNBT(NBTTagCompound compound) {
         super.readFromNBT(compound);
-        yaw = compound.getInteger("yaw");
-        pitch = compound.getInteger("pitch");
+        padYaw = compound.getInteger("padYaw");
+        padPitch = compound.getInteger("padPitch");
+        padPitch = compound.getInteger("beamYaw");
+        padPitch = compound.getInteger("beamPitch");
     }
 
     @Override
     public void writeToNBT(NBTTagCompound compound) {
         super.writeToNBT(compound);
-        compound.setInteger("yaw", yaw);
-        compound.setInteger("pitch", pitch);
+        compound.setInteger("padYaw", padYaw);
+        compound.setInteger("padPitch", padPitch);
+        compound.setInteger("beamPitch", padPitch);
+        compound.setInteger("beamYaw", padPitch);
     }
 }

@@ -31,8 +31,8 @@ import java.util.List;
 public class Utils {
 
     public static Vec3d getVectorForRotation3d(float pitch, float yaw) {
-        float f = MathHelper.cos(-yaw * 0.017453292F - 3.1415927F);
-        float f1 = MathHelper.sin(-yaw * 0.017453292F - 3.1415927F);
+        float f = MathHelper.cos(-yaw * 0.017453292F - (float) Math.PI);
+        float f1 = MathHelper.sin(-yaw * 0.017453292F - (float) Math.PI);
         float f2 = -MathHelper.cos(-pitch * 0.017453292F);
         float f3 = MathHelper.sin(-pitch * 0.017453292F);
         return new Vec3d((double) (f1 * f2), (double) f3, (double) (f * f2));
@@ -47,6 +47,18 @@ public class Utils {
             GlStateManager.disableRescaleNormal();
         }
     }
+
+    public static Vec3d getDirectionVector(int pitch, int yaw) {
+        double newPitch = ((pitch + 90) * Math.PI) / 180;
+        double newYaw = ((yaw + 90) * Math.PI) / 180;
+
+        double x = Math.sin(newPitch) * Math.cos(newYaw);
+        double y = Math.sin(newPitch) * Math.sin(newYaw);
+        double z = Math.cos(newPitch);
+
+        return new Vec3d(x, y, z);
+    }
+
 
     public static ArrayList<String> padString(String string, int stringSize) {
         ArrayList<String> lines = new ArrayList<>();

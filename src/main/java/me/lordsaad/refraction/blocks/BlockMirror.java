@@ -2,7 +2,6 @@ package me.lordsaad.refraction.blocks;
 
 import me.lordsaad.refraction.ModItems;
 import me.lordsaad.refraction.Refraction;
-import me.lordsaad.refraction.Utils;
 import me.lordsaad.refraction.network.PacketHandler;
 import me.lordsaad.refraction.network.PacketMirror;
 import me.lordsaad.refraction.tesrs.TESRMirror;
@@ -32,8 +31,6 @@ import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
-import java.util.Random;
 
 /**
  * Created by Saad on 3/24/2016.
@@ -69,72 +66,59 @@ public class BlockMirror extends BlockDirectional implements ITileEntityProvider
         TileEntityMirror mirror = getTE(worldIn, pos);
         if (!worldIn.isRemote) {
             if (playerIn.inventory.getCurrentItem().getItem() == ModItems.screwdriver) {
-                if (!playerIn.isSneaking()) {
 
-                    if (side != EnumFacing.UP && side != EnumFacing.DOWN) {
-                        boolean top = hitY >= 0.7f, bottom = hitY <= 0.3;
-                        boolean left = (side.getAxis() == EnumFacing.Axis.Z ? hitX : hitZ) >= 0.7f;
-                        boolean right = (side.getAxis() == EnumFacing.Axis.Z ? hitX : hitZ) <= 0.3f;
+                if (side != EnumFacing.UP && side != EnumFacing.DOWN) {
+                    boolean top = hitY >= 0.5f;
 
-                        if (side == EnumFacing.NORTH || side == EnumFacing.SOUTH) {
-
-                            if (side == EnumFacing.SOUTH) {
-                                if (top) mirror.subtractPitch(1);
-                                else if (bottom) mirror.addPitch(1);
-
+                    switch (side) {
+                        case NORTH:
+                            if (top) {
+                                mirror.setBeamPitch(mirror.getBeamPitch() + 1);
+                                mirror.addPadPitch(1);
                             } else {
-                                if (top) mirror.addPitch(1);
-                                else if (bottom) mirror.subtractPitch(1);
+                                mirror.setBeamPitch(mirror.getBeamPitch() - 1);
+                                mirror.subtractPadPitch(1);
                             }
-
-                            if (left) mirror.subtractYaw(1);
-                            else if (right) mirror.addYaw(1);
-
-                        } else {
-
-                            if (side == EnumFacing.EAST) {
-                                if (top) mirror.addYaw(1);
-                                else if (bottom) mirror.subtractYaw(1);
+                            break;
+                        case SOUTH:
+                            if (top) {
+                                mirror.setBeamPitch(mirror.getBeamPitch() - 1);
+                                mirror.subtractPadPitch(1);
                             } else {
-                                if (top) mirror.subtractYaw(1);
-                                else if (bottom) mirror.addYaw(1);
+                                mirror.setBeamPitch(mirror.getBeamPitch() + 1);
+                                mirror.addPadPitch(1);
                             }
-
-                            if (left) mirror.addPitch(1);
-                            else if (right) mirror.subtractPitch(1);
-                        }
-                        switch (mirror.getEffectiveHorizontalDirection()) {
-                            case NORTH: {
-                                if (top) mirror.setEffectivePitch(mirror.getEffectivePitch() + 1);
-                                else mirror.setEffectivePitch(mirror.getEffectivePitch() - 1);
-
-                                if (left) mirror.setEffectiveYaw(mirror.getEffectiveYaw() - 1);
-                                else mirror.setEffectiveYaw(mirror.getEffectiveYaw() + 1);
-                                break;
+                            break;
+                        case EAST:
+                            if (top) {
+                                mirror.setBeamYaw(mirror.getBeamYaw() + 1);
+                                mirror.addPadYaw(1);
+                            } else {
+                                mirror.setBeamYaw(mirror.getBeamYaw() - 1);
+                                mirror.subtractPadYaw(1);
                             }
-                        }
-
-                        playerIn.addChatComponentMessage(new TextComponentString(TextFormatting.YELLOW + "pitch: " + mirror.getPitch() + " -- yaw:" + mirror.getYaw() + " -- real pitch:" + mirror.getEffectivePitch() + " -- real yaw:" + mirror.getEffectiveYaw() + " -- " + mirror.getEffectiveHorizontalDirection()));
-
-                        // SEND PACKETS //
-                        PacketMirror packet = new PacketMirror(mirror.getYaw(), mirror.getPitch(), pos);
-                        PacketHandler.INSTANCE.sendToAll(packet);
+                            break;
+                        case WEST:
+                            if (top) {
+                                mirror.setBeamYaw(mirror.getBeamYaw() - 1);
+                                mirror.subtractPadYaw(1);
+                            } else {
+                                mirror.setBeamYaw(mirror.getBeamYaw() + 1);
+                                mirror.addPadYaw(1);
+                            }
+                            break;
                     }
-                } else {
-                    blockState.getBlock().dropBlockAsItem(worldIn, pos, state, 1);
-                    worldIn.setBlockToAir(pos);
+
+                    playerIn.addChatComponentMessage(new TextComponentString(TextFormatting.YELLOW + "pitch: " + mirror.getBeamPitch() + " -- yaw:" + mirror.getBeamYaw()));
+
+                    // SEND PACKETS //
+                    PacketMirror packet = new PacketMirror(mirror.getPadYaw(), mirror.getPadPitch(), mirror.getBeamYaw(), mirror.getBeamPitch(), pos);
+                    PacketHandler.INSTANCE.sendToAll(packet);
+
+                    Refraction.proxy.spawnParticleSparkleLine(worldIn, pos.getX() + .5, pos.getY() + 1, pos.getZ() + .5, 0, 0.5, 0, 12, 12, 12);
                 }
             } else return false;
         }
-        Random random = new Random();
-        double offX = random.nextFloat() * 0.5 - 0.25;
-        double offY = random.nextFloat() * 0.5 - 0.25;
-        double offZ = random.nextFloat() * 0.5 - 0.25;
-        double coeff = (offX + offY + offZ) / 1.5 + 0.5;
-        double dx = (Utils.getVectorForRotation3d(mirror.getPitch(), mirror.getYaw()).xCoord + offX) * coeff;
-        double dy = (Utils.getVectorForRotation3d(mirror.getPitch(), mirror.getYaw()).yCoord + offY) * coeff;
-        double dz = (Utils.getVectorForRotation3d(mirror.getPitch(), mirror.getYaw()).zCoord + offZ) * coeff;
-        Refraction.proxy.spawnParticleSparkleLine(worldIn, pos.getX() + dx, pos.getY() + 1.5 + dy, pos.getZ() + dz, dx, dy, dz, 1, 2, 0.3);
         return true;
     }
 
@@ -143,20 +127,35 @@ public class BlockMirror extends BlockDirectional implements ITileEntityProvider
         TileEntityMirror mirror = (TileEntityMirror) worldIn.getTileEntity(pos);
         EnumFacing facing = state.getValue(BlockMirror.FACING);
         if (facing == EnumFacing.NORTH) {
-            mirror.setYaw(0);
-            mirror.setPitch(-89);
+            mirror.setPadYaw(0);
+            mirror.setPadPitch(-89);
+            mirror.setBeamPitch(0);
+            mirror.setBeamYaw(180);
         } else if (facing == EnumFacing.SOUTH) {
-            mirror.setYaw(0);
-            mirror.setPitch(89);
+            mirror.setPadYaw(0);
+            mirror.setPadPitch(89);
+            mirror.setBeamPitch(0);
+            mirror.setBeamYaw(0);
         } else if (facing == EnumFacing.EAST) {
-            mirror.setYaw(-89);
-            mirror.setPitch(0);
+            mirror.setPadYaw(-89);
+            mirror.setPadPitch(0);
+            mirror.setBeamPitch(0);
+            mirror.setBeamYaw(-90);
         } else if (facing == EnumFacing.WEST) {
-            mirror.setYaw(89);
-            mirror.setPitch(0);
+            mirror.setPadYaw(89);
+            mirror.setPadPitch(0);
+            mirror.setBeamPitch(0);
+            mirror.setBeamYaw(90);
         } else if (facing == EnumFacing.DOWN) {
-            mirror.setYaw(179);
-            mirror.setPitch(0);
+            mirror.setPadYaw(179);
+            mirror.setPadPitch(0);
+            mirror.setBeamPitch(90);
+            mirror.setBeamYaw(0);
+        } else {
+            mirror.setPadYaw(0);
+            mirror.setPadPitch(0);
+            mirror.setBeamPitch(-90);
+            mirror.setBeamYaw(0);
         }
     }
 
