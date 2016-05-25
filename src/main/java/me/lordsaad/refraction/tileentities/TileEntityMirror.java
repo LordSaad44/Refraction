@@ -99,8 +99,8 @@ public class TileEntityMirror extends TileEntity {
         super.readFromNBT(compound);
         padYaw = compound.getInteger("padYaw");
         padPitch = compound.getInteger("padPitch");
-        padPitch = compound.getInteger("beamYaw");
-        padPitch = compound.getInteger("beamPitch");
+        beamYaw = compound.getInteger("beamYaw");
+        beamPitch = compound.getInteger("beamPitch");
     }
 
     @Override
@@ -108,7 +108,7 @@ public class TileEntityMirror extends TileEntity {
         super.writeToNBT(compound);
         compound.setInteger("padYaw", padYaw);
         compound.setInteger("padPitch", padPitch);
-        compound.setInteger("beamPitch", padPitch);
-        compound.setInteger("beamYaw", padPitch);
+        compound.setInteger("beamPitch", beamPitch);
+        compound.setInteger("beamYaw", beamYaw);
     }
 }

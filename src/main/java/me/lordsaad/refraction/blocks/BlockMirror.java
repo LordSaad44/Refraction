@@ -2,6 +2,7 @@ package me.lordsaad.refraction.blocks;
 
 import me.lordsaad.refraction.ModItems;
 import me.lordsaad.refraction.Refraction;
+import me.lordsaad.refraction.Utils;
 import me.lordsaad.refraction.network.PacketHandler;
 import me.lordsaad.refraction.network.PacketMirror;
 import me.lordsaad.refraction.tesrs.TESRMirror;
@@ -115,7 +116,10 @@ public class BlockMirror extends BlockDirectional implements ITileEntityProvider
                     PacketMirror packet = new PacketMirror(mirror.getPadYaw(), mirror.getPadPitch(), mirror.getBeamYaw(), mirror.getBeamPitch(), pos);
                     PacketHandler.INSTANCE.sendToAll(packet);
 
-                    Refraction.proxy.spawnParticleSparkleLine(worldIn, pos.getX() + .5, pos.getY() + 1, pos.getZ() + .5, 0, 0.5, 0, 12, 12, 12);
+                    for (BlockPos tempPos : Utils.getCircle(pos, 3, 50)) {
+                        Refraction.proxy.spawnParticleSparkleLine(worldIn, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5,
+                                tempPos.getX(), pos.getY() + 1, tempPos.getZ());
+                    }
                 }
             } else return false;
         }
@@ -160,7 +164,8 @@ public class BlockMirror extends BlockDirectional implements ITileEntityProvider
     }
 
     @Override
-    public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
+    public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY,
+                                     float hitZ, int meta, EntityLivingBase placer) {
         return this.getStateFromMeta(meta).withProperty(FACING, facing);
     }
 
@@ -222,7 +227,6 @@ public class BlockMirror extends BlockDirectional implements ITileEntityProvider
             default:
                 i = 0;
                 break;
-
         }
         return i;
     }

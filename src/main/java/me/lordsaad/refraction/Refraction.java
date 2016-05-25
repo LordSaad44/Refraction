@@ -1,6 +1,6 @@
 package me.lordsaad.refraction;
 
-import me.lordsaad.refraction.entity.fx.EntityFXSparkle;
+import me.lordsaad.refraction.entity.fx.SparkleFX;
 import me.lordsaad.refraction.gui.GuiHandler;
 import me.lordsaad.refraction.network.PacketHandler;
 import net.minecraft.client.Minecraft;
@@ -66,7 +66,7 @@ public class Refraction {
         public void postInit(FMLPostInitializationEvent e) {
         }
 
-        public void spawnParticleSparkleLine(World world, double x, double y, double z, double vx, double vy, double vz, double r, double g, double b) {
+        public void spawnParticleSparkleLine(World world, double x, double y, double z, double xNext, double yNext, double zNext) {
         }
     }
 
@@ -85,10 +85,11 @@ public class Refraction {
         @SubscribeEvent
         public void onTextureStitchEvent(TextureStitchEvent.Pre event) {
             event.map.registerSprite(new ResourceLocation(MODID + ":blocks/mirrorface"));
+            event.map.registerSprite(new ResourceLocation(Refraction.MODID, "entity/sparkle"));
         }
 
-        public void spawnParticleSparkleLine(World world, double x, double y, double z, double vx, double vy, double vz, double r, double g, double b) {
-            EntityFXSparkle particle = new EntityFXSparkle(world, x, y, z, vx, vy, vz, r, g, b);
+        public void spawnParticleSparkleLine(World world, double x, double y, double z, double xNext, double yNext, double zNext) {
+            SparkleFX particle = new SparkleFX(world, x, y, z, xNext, yNext, zNext);
             Minecraft.getMinecraft().effectRenderer.addEffect(particle);
         }
     }

@@ -48,15 +48,16 @@ public class Utils {
         }
     }
 
-    public static Vec3d getDirectionVector(int pitch, int yaw) {
-        double newPitch = ((pitch + 90) * Math.PI) / 180;
-        double newYaw = ((yaw + 90) * Math.PI) / 180;
-
-        double x = Math.sin(newPitch) * Math.cos(newYaw);
-        double y = Math.sin(newPitch) * Math.sin(newYaw);
-        double z = Math.cos(newPitch);
-
-        return new Vec3d(x, y, z);
+    public static ArrayList<BlockPos> getCircle(BlockPos center, double radius, int amount) {
+        ArrayList<BlockPos> locations = new ArrayList<>();
+        double increment = (2 * Math.PI) / amount;
+        for (int i = 0; i < amount; i++) {
+            double angle = i * increment;
+            double x = center.getX() + (radius * Math.cos(angle));
+            double z = center.getZ() + (radius * Math.sin(angle));
+            locations.add(new BlockPos(x, center.getY(), z));
+        }
+        return locations;
     }
 
 

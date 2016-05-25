@@ -63,15 +63,12 @@ public class TESRMirror extends TileEntitySpecialRenderer<TileEntityMirror> {
 
         // RAYTRACE //
         Vec3d centervec = new Vec3d(te.getPos().getX() + 0.5, te.getPos().getY() + 0.8, te.getPos().getZ() + 0.5);
-        Vec3d lookvec = Utils.getVectorForRotation3d(te.getBeamPitch(), te.getBeamYaw());
+        Vec3d lookvec = Utils.getVectorForRotation3d(te.getPadPitch() - 90, te.getPadYaw() - 90);
         Vec3d startvec = centervec.add(lookvec);
 
-        //player.addChatComponentMessage(new TextComponentString(player.rotationPitch + " - " + player.rotationYaw));
-
-        Vec3d end = startvec.add(new Vec3d(lookvec.xCoord * 100, lookvec.yCoord * 100, lookvec.zCoord * 100));
+        Vec3d end = startvec.add(new Vec3d(lookvec.xCoord * 30, lookvec.yCoord * 30, lookvec.zCoord * 30));
         RayTraceResult result = te.getWorld().rayTraceBlocks(startvec, end, true, false, true);
-
-        Utils.drawConnection(te.getPos(), result.getBlockPos(), Color.WHITE);
+        Utils.drawConnection(te.getPos(), result.getBlockPos(), Color.RED);
         // RAYTRACE //
 
         // ORIENT PAD //

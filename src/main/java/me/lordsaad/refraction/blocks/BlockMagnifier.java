@@ -99,6 +99,9 @@ public class BlockMagnifier extends BlockDirectional implements ITileEntityProvi
     public int getMetaFromState(IBlockState state) {
         int i;
         switch (state.getValue(FACING).ordinal()) {
+            case 0:
+                i = 0;
+                break;
             case 1:
                 i = 1;
                 break;
@@ -112,10 +115,9 @@ public class BlockMagnifier extends BlockDirectional implements ITileEntityProvi
                 i = 4;
                 break;
             case 5:
-            default:
                 i = 5;
                 break;
-            case 6:
+            default:
                 i = 0;
                 break;
         }
