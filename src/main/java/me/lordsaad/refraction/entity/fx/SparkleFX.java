@@ -28,14 +28,14 @@ public class SparkleFX extends EntityFX {
         this.xNext = xNext;
         this.yNext = yNext;
         this.zNext = zNext;
-        symmRange = 0.3;
-        xSpeed = (x - xNext) / 10;
-        ySpeed = 0.2D;
-        zSpeed = (y - yNext) / 10;
+        symmRange = -0.3;
+        xSpeed = -0.3 + (0.3 + 0.3) * random.nextDouble();
+        ySpeed = -0.3 + (0.3 + 0.3) * random.nextDouble();
+        zSpeed = -0.3 + (0.3 + 0.3) * random.nextDouble();
         posX = x;
         posY = y;
         posZ = z;
-        particleMaxAge = 5;
+        particleMaxAge = 10;
         TextureAtlasSprite sprite = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(texture.toString());
         this.setParticleTexture(sprite);
     }
@@ -53,17 +53,14 @@ public class SparkleFX extends EntityFX {
     @Override
     public void onUpdate() {
         super.onUpdate();
-        xSpeed = (x - xNext) / 10;
-        ySpeed *= 0.65;
-        zSpeed = (z - zNext) / 10;
-       /* this.ySpeed *= -symmRange + (symmRange + symmRange) * random.nextDouble();
-        this.xSpeed *= -symmRange + (symmRange + symmRange) * random.nextDouble();
-        this.zSpeed *= -symmRange + (symmRange + symmRange) * random.nextDouble();*/
+        xSpeed = -0.3 + (0.3 + 0.3) * random.nextDouble();
+        ySpeed = -0.3 + (0.3 + 0.3) * random.nextDouble();
+        zSpeed = -0.3 + (0.3 + 0.3) * random.nextDouble();
         float lifeCoeff = ((float) this.particleMaxAge - (float) this.particleAge) / (float) this.particleMaxAge;
         if (random.nextInt(4) == 0) this.particleAge--;
-        //this.particleRed += random.nextInt(5) + -4;
-        // this.particleGreen += random.nextInt(5) + -4;
-        // this.particleBlue += random.nextInt(5) + -4;
+        this.particleRed += random.nextInt(5) + -4;
+        this.particleGreen += random.nextInt(5) + -4;
+        this.particleBlue += random.nextInt(5) + -4;
         this.particleAlpha = lifeCoeff;
         this.particleScale = lifeCoeff;
     }

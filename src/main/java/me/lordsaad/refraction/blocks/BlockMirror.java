@@ -2,7 +2,6 @@ package me.lordsaad.refraction.blocks;
 
 import me.lordsaad.refraction.ModItems;
 import me.lordsaad.refraction.Refraction;
-import me.lordsaad.refraction.Utils;
 import me.lordsaad.refraction.network.PacketHandler;
 import me.lordsaad.refraction.network.PacketMirror;
 import me.lordsaad.refraction.tesrs.TESRMirror;
@@ -32,6 +31,8 @@ import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import java.util.Random;
 
 /**
  * Created by Saad on 3/24/2016.
@@ -116,9 +117,15 @@ public class BlockMirror extends BlockDirectional implements ITileEntityProvider
                     PacketMirror packet = new PacketMirror(mirror.getPadYaw(), mirror.getPadPitch(), mirror.getBeamYaw(), mirror.getBeamPitch(), pos);
                     PacketHandler.INSTANCE.sendToAll(packet);
 
-                    for (BlockPos tempPos : Utils.getCircle(pos, 3, 50)) {
+                    /*for (BlockPos tempPos : Utils.getCircle(pos, 3, 50)) {
                         Refraction.proxy.spawnParticleSparkleLine(worldIn, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5,
                                 tempPos.getX(), pos.getY() + 1, tempPos.getZ());
+                    }*/
+
+                    Random random = new Random();
+                    for (int i = 0; i < 20; i++) {
+                        Refraction.proxy.spawnParticleSparkleLine(worldIn, pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5,
+                                5 * random.nextDouble(), 5 * random.nextDouble(), 5 * random.nextDouble());
                     }
                 }
             } else return false;
