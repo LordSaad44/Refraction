@@ -53,14 +53,8 @@ public class SparkleFX extends EntityFX {
     @Override
     public void onUpdate() {
         super.onUpdate();
-        xSpeed = -0.3 + (0.3 + 0.3) * random.nextDouble();
-        ySpeed = -0.3 + (0.3 + 0.3) * random.nextDouble();
-        zSpeed = -0.3 + (0.3 + 0.3) * random.nextDouble();
         float lifeCoeff = ((float) this.particleMaxAge - (float) this.particleAge) / (float) this.particleMaxAge;
         if (random.nextInt(4) == 0) this.particleAge--;
-        this.particleRed += random.nextInt(5) + -4;
-        this.particleGreen += random.nextInt(5) + -4;
-        this.particleBlue += random.nextInt(5) + -4;
         this.particleAlpha = lifeCoeff;
         this.particleScale = lifeCoeff;
     }

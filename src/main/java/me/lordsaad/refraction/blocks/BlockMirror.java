@@ -117,15 +117,10 @@ public class BlockMirror extends BlockDirectional implements ITileEntityProvider
                     PacketMirror packet = new PacketMirror(mirror.getPadYaw(), mirror.getPadPitch(), mirror.getBeamYaw(), mirror.getBeamPitch(), pos);
                     PacketHandler.INSTANCE.sendToAll(packet);
 
-                    /*for (BlockPos tempPos : Utils.getCircle(pos, 3, 50)) {
-                        Refraction.proxy.spawnParticleSparkleLine(worldIn, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5,
-                                tempPos.getX(), pos.getY() + 1, tempPos.getZ());
-                    }*/
-
                     Random random = new Random();
-                    for (int i = 0; i < 20; i++) {
-                        Refraction.proxy.spawnParticleSparkleLine(worldIn, pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5,
-                                5 * random.nextDouble(), 5 * random.nextDouble(), 5 * random.nextDouble());
+                    for (int i = 0; i < 10; i++) {
+                        Refraction.proxy.spawnParticleSparkleLine(worldIn, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
+                                5 * random.nextDouble(), 5 * random.nextDouble() + 0.5, 5 * random.nextDouble());
                     }
                 }
             } else return false;
