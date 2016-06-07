@@ -1,5 +1,10 @@
 package me.lordsaad.refraction.blocks;
 
+import me.lordsaad.refraction.ModItems;
+import me.lordsaad.refraction.Refraction;
+import me.lordsaad.refraction.network.PacketHandler;
+import me.lordsaad.refraction.network.PacketMagnifier;
+import me.lordsaad.refraction.tesrs.TESRMagnifier;
 import me.lordsaad.refraction.tileentities.TileEntityMagnifier;
 import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.ITileEntityProvider;
@@ -12,14 +17,22 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.*;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.Mirror;
+import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import java.util.Random;
 
 /**
  * Created by Saad on 4/11/2016.
@@ -36,13 +49,9 @@ public class BlockMagnifier extends BlockDirectional implements ITileEntityProvi
     }
 
     @SideOnly(Side.CLIENT)
-    public BlockRenderLayer getBlockLayer() {
-        return BlockRenderLayer.TRANSLUCENT;
-    }
-
-    @SideOnly(Side.CLIENT)
     public void initModel() {
         ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(this), 0, new ModelResourceLocation(getRegistryName(), "inventory"));
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityMagnifier.class, new TESRMagnifier());
     }
 
     @Override
@@ -56,15 +65,116 @@ public class BlockMagnifier extends BlockDirectional implements ITileEntityProvi
 
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
+        TileEntityMagnifier magnifier = getTE(worldIn, pos);
         if (!worldIn.isRemote) {
-            // TODO
+            if (playerIn.inventory.getCurrentItem().getItem() == ModItems.screwdriver) {
+
+                if (side != EnumFacing.UP && side != EnumFacing.DOWN) {
+                    boolean top = hitY >= 0.5f;
+
+                    switch (side) {
+                        case NORTH:
+                            if (top) {
+                                magnifier.setBeamPitch(magnifier.getBeamPitch() + 1);
+                                magnifier.addPadPitch(1);
+                            } else {
+                                magnifier.setBeamPitch(magnifier.getBeamPitch() - 1);
+                                magnifier.subtractPadPitch(1);
+                            }
+                            break;
+                        case SOUTH:
+                            if (top) {
+                                magnifier.setBeamPitch(magnifier.getBeamPitch() - 1);
+                                magnifier.subtractPadPitch(1);
+                            } else {
+                                magnifier.setBeamPitch(magnifier.getBeamPitch() + 1);
+                                magnifier.addPadPitch(1);
+                            }
+                            break;
+                        case EAST:
+                            if (top) {
+                                magnifier.setBeamYaw(magnifier.getBeamYaw() + 1);
+                                magnifier.addPadYaw(1);
+                            } else {
+                                magnifier.setBeamYaw(magnifier.getBeamYaw() - 1);
+                                magnifier.subtractPadYaw(1);
+                            }
+                            break;
+                        case WEST:
+                            if (top) {
+                                magnifier.setBeamYaw(magnifier.getBeamYaw() - 1);
+                                magnifier.subtractPadYaw(1);
+                            } else {
+                                magnifier.setBeamYaw(magnifier.getBeamYaw() + 1);
+                                magnifier.addPadYaw(1);
+                            }
+                            break;
+                    }
+
+                    playerIn.addChatComponentMessage(new TextComponentString(TextFormatting.YELLOW + "pitch: " + magnifier.getBeamPitch() + " -- yaw:" + magnifier.getBeamYaw()));
+
+                    // SEND PACKETS //
+                    PacketMagnifier packet = new PacketMagnifier(magnifier.getPadYaw(), magnifier.getPadPitch(), magnifier.getBeamYaw(), magnifier.getBeamPitch(), pos);
+                    PacketHandler.INSTANCE.sendToAll(packet);
+
+                    Random random = new Random();
+                    for (int i = 0; i < 10; i++) {
+                        Refraction.proxy.spawnParticleSparkleLine(worldIn, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
+                                5 * random.nextDouble(), 5 * random.nextDouble() + 0.5, 5 * random.nextDouble());
+                    }
+                }
+            } else return false;
         }
         return true;
     }
 
     @Override
-    public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
+    public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
+        TileEntityMagnifier magnifier = (TileEntityMagnifier) worldIn.getTileEntity(pos);
+        EnumFacing facing = state.getValue(BlockMirror.FACING);
+        if (facing == EnumFacing.NORTH) {
+            magnifier.setPadYaw(0);
+            magnifier.setPadPitch(-89);
+            magnifier.setBeamPitch(0);
+            magnifier.setBeamYaw(180);
+        } else if (facing == EnumFacing.SOUTH) {
+            magnifier.setPadYaw(0);
+            magnifier.setPadPitch(89);
+            magnifier.setBeamPitch(0);
+            magnifier.setBeamYaw(0);
+        } else if (facing == EnumFacing.EAST) {
+            magnifier.setPadYaw(-89);
+            magnifier.setPadPitch(0);
+            magnifier.setBeamPitch(0);
+            magnifier.setBeamYaw(-90);
+        } else if (facing == EnumFacing.WEST) {
+            magnifier.setPadYaw(89);
+            magnifier.setPadPitch(0);
+            magnifier.setBeamPitch(0);
+            magnifier.setBeamYaw(90);
+        } else if (facing == EnumFacing.DOWN) {
+            magnifier.setPadYaw(179);
+            magnifier.setPadPitch(0);
+            magnifier.setBeamPitch(90);
+            magnifier.setBeamYaw(0);
+        } else {
+            magnifier.setPadYaw(0);
+            magnifier.setPadPitch(0);
+            magnifier.setBeamPitch(-90);
+            magnifier.setBeamYaw(0);
+        }
+    }
+
+    @Override
+    public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY,
+                                     float hitZ, int meta, EntityLivingBase placer) {
         return this.getStateFromMeta(meta).withProperty(FACING, facing);
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public boolean shouldSideBeRendered(IBlockState state, IBlockAccess worldIn, BlockPos pos, EnumFacing side) {
+        return false;
     }
 
     @Override
@@ -89,7 +199,6 @@ public class BlockMagnifier extends BlockDirectional implements ITileEntityProvi
             case 5:
             default:
                 enumfacing = EnumFacing.UP;
-                break;
         }
 
         return this.getDefaultState().withProperty(FACING, enumfacing);
@@ -188,4 +297,5 @@ public class BlockMagnifier extends BlockDirectional implements ITileEntityProvi
     public boolean isNormalCube(IBlockState state, IBlockAccess world, BlockPos pos) {
         return false;
     }
+
 }
